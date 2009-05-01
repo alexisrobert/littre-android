@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<string name="app_name">Dictionnaire Littré</string>
+<string name="searchhint">Mot</string>
+<string name="searchlabel">Recherche</string>
+<string name="indexurl">http://alexissoft.free.fr/littre/XMLittre.idx</string>
+<string name="definitionurl">http://alexissoft.free.fr/littre/definition.php?offset=%d&amp;size=%d</string>
+<string name="no_result_message">Aucun résultat.</string>
+<string name="no_result_title">Recherche</string>
+<string name="menu_search">Recherche</string>
+<string name="no_network_title">Pas de réseau</string>
+<string name="no_network_message">Vous devez être connectés pour afficher une définition.</string>
+<string name="no_network_idx_message">Vous devez être connectés pour télécharger l\'index (construit au premier lancement).</string>
+</resources>
