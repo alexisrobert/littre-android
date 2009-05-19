@@ -122,8 +122,7 @@ public class littre extends ListActivity {
         				if (words.size() == 1) {
         					runOnUiThread(new Runnable() {
         						public void run() {
-        							fireShowIntent(words.get(0));
-                					finish();
+        							fireShowIntent(words.get(0), true);
         						}
         					});
         				} else if (words.size() == 0) {
@@ -236,7 +235,9 @@ public class littre extends ListActivity {
     }
     
     // Fire the intent which is aimed to show the definition
-    private void fireShowIntent(String word) {
+    private void fireShowIntent(String word) { fireShowIntent(word, false); }
+    
+    private void fireShowIntent(String word, boolean finish) {
     	ConnectivityManager c = (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
     	
 		if (c.getActiveNetworkInfo() == null || c.getActiveNetworkInfo().isAvailable() == false) {
@@ -257,25 +258,28 @@ public class littre extends ListActivity {
 		d.setCancelable(false);
 		d.show();
 		
-    	task.execute(word, idx, d);
+    	task.execute(word, idx, d, new Boolean(finish));
     }
     
     private class GetDefinitionTask extends AsyncTask<Object, Object, Boolean> {
     	Intent i;
     	ProgressDialog d;
     	String word;
+    	boolean finish;
     	
 		@Override
 		protected Boolean doInBackground(Object... params) {
-			if (!(params.length > 1) || !(params[0] instanceof String)
+			if (!(params.length >= 4) || !(params[0] instanceof String)
 					|| !(params[1] instanceof Index)
-					|| !(params[2] instanceof ProgressDialog)) {
+					|| !(params[2] instanceof ProgressDialog)
+					|| !(params[3] instanceof Boolean)) {
 				return false;
 			}
 			
 			Index idx = (Index)params[1];
 			word = (String)params[0];
 			d = (ProgressDialog)params[2];
+			finish = (Boolean)params[3];
 			
 			i = new Intent(Intent.ACTION_VIEW, null, getApplicationContext(), Definition.class);
 			i.putExtra("word", idx.getWord(word));
@@ -296,6 +300,9 @@ public class littre extends ListActivity {
 				
 				startActivity(i);
 			}
+			
+			if (finish == true)
+				finish();
 		}
     }
     
