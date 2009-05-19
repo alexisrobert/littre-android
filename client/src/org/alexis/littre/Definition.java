@@ -25,7 +25,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.webkit.WebView;
+import android.widget.Button;
 
 public class Definition extends Activity {
     WebView web;
@@ -45,6 +47,16 @@ public class Definition extends Activity {
         web.loadUrl(String.format(getString(R.string.definitionurl),
 					word.getOffset(),
 					word.getSize()));
+        
+        Button backbutton = (Button)findViewById(R.id.backButton);
+        backbutton.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+        	
+        });
     }
     
     @Override

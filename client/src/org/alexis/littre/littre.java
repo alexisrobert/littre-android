@@ -25,10 +25,12 @@ import org.alexis.libstardict.Index;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -244,11 +246,52 @@ public class littre extends ListActivity {
 		}
     	
     	setProgressBarIndeterminateVisibility(true);
-		Intent i = new Intent(Intent.ACTION_VIEW, null, getApplicationContext(), Definition.class);
-		i.putExtra("word", idx.getWord(word));
-		idx.storeHistory(word);
-		setProgressBarIndeterminateVisibility(false);
-		startActivity(i);
+    	GetDefinitionTask task = new GetDefinitionTask();
+    	task.setContext(this);
+    	task.execute(word, idx);
+    }
+    
+    private class GetDefinitionTask extends AsyncTask<Object, Object, Object> {
+    	Intent i;
+    	Context ctx;
+    	ProgressDialog d;
+    	
+    	public void setContext(Context ctx) {
+    		this.ctx = ctx;
+    	}
+    	
+    	protected void onPreExecute() {
+    		d = new ProgressDialog(ctx);
+			d.setTitle("Recherche de votre définition");
+			d.setMessage("Veuillez patienter ...");
+			d.setIndeterminate(true);
+			d.setCancelable(false);
+			d.show();
+    	}
+    	
+		@Override
+		protected Object doInBackground(Object... params) {
+			if (!(params.length > 1) || !(params[0] instanceof String)
+					|| !(params[1] instanceof Index)) {
+				return null;
+			}
+			
+			Index idx = (Index)params[1];
+			String word = (String)params[0];
+			
+			i = new Intent(Intent.ACTION_VIEW, null, getApplicationContext(), Definition.class);
+			i.putExtra("word", idx.getWord(word));
+			idx.storeHistory(word);
+			
+			return null;
+		}
+    	
+		protected void onPostExecute(Object result) {
+			d.dismiss();
+			setProgressBarIndeterminateVisibility(false);
+			
+			startActivity(i);
+		}
     }
     
     @Override
