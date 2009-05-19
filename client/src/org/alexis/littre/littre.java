@@ -51,6 +51,8 @@ public class littre extends ListActivity {
     Vector<String> words;
     boolean alphabet = false;
     
+    GetDefinitionTask task;
+    
     char mode = MODE_NORMAL;
     
     static final char MODE_NORMAL = 0;
@@ -246,57 +248,63 @@ public class littre extends ListActivity {
 		}
     	
     	setProgressBarIndeterminateVisibility(true);
-    	GetDefinitionTask task = new GetDefinitionTask();
-    	task.setContext(this);
-    	task.execute(word, idx);
+    	task = new GetDefinitionTask();
+    	
+    	ProgressDialog d = new ProgressDialog(this);
+		d.setTitle("Recherche de votre définition");
+		d.setMessage("Veuillez patienter ...");
+		d.setIndeterminate(true);
+		d.setCancelable(false);
+		d.show();
+		
+    	task.execute(word, idx, d);
     }
     
-    private class GetDefinitionTask extends AsyncTask<Object, Object, Object> {
+    private class GetDefinitionTask extends AsyncTask<Object, Object, Boolean> {
     	Intent i;
-    	Context ctx;
     	ProgressDialog d;
-    	
-    	public void setContext(Context ctx) {
-    		this.ctx = ctx;
-    	}
-    	
-    	protected void onPreExecute() {
-    		d = new ProgressDialog(ctx);
-			d.setTitle("Recherche de votre définition");
-			d.setMessage("Veuillez patienter ...");
-			d.setIndeterminate(true);
-			d.setCancelable(false);
-			d.show();
-    	}
+    	String word;
     	
 		@Override
-		protected Object doInBackground(Object... params) {
+		protected Boolean doInBackground(Object... params) {
 			if (!(params.length > 1) || !(params[0] instanceof String)
-					|| !(params[1] instanceof Index)) {
-				return null;
+					|| !(params[1] instanceof Index)
+					|| !(params[2] instanceof ProgressDialog)) {
+				return false;
 			}
 			
 			Index idx = (Index)params[1];
-			String word = (String)params[0];
+			word = (String)params[0];
+			d = (ProgressDialog)params[2];
 			
 			i = new Intent(Intent.ACTION_VIEW, null, getApplicationContext(), Definition.class);
 			i.putExtra("word", idx.getWord(word));
-			idx.storeHistory(word);
 			
-			return null;
+			return true;
 		}
     	
-		protected void onPostExecute(Object result) {
+		protected void onPostExecute(Boolean result) {
 			d.dismiss();
 			setProgressBarIndeterminateVisibility(false);
 			
-			startActivity(i);
+			if (result == true) {
+				/* History saving is here to ENSURE that we store it
+				 * when it is currently showed. In fact, the above thread
+				 * CAN be interrupted, in case of device's rotation for instance,
+				 * so : be careful to siding effects! */
+				idx.storeHistory(word);
+				
+				startActivity(i);
+			}
 		}
     }
     
     @Override
     public Object onRetainNonConfigurationInstance() {
     	idx.prepareConfigurationChange();
+    	if (task != null)
+    		task.cancel(true);
+    	
     	return idx;
     }
 }
