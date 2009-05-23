@@ -4,6 +4,7 @@
 <string name="searchhint">Mot</string>
 <string name="searchlabel">Recherche</string>
 <string name="indexurl">http://alexissoft.free.fr/littre/XMLittre.idx</string>
+<string name="wordcounturl">http://alexissoft.free.fr/littre/wordcount</string>
 <string name="definitionurl">http://alexissoft.free.fr/littre/definition.php?offset=%d&amp;size=%d</string>
 <string name="no_result_message">Aucun résultat.</string>
 <string name="no_result_title">Recherche</string>

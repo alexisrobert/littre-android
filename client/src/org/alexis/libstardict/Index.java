@@ -38,15 +38,14 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
 import android.net.ConnectivityManager;
-import android.os.Handler;
+import android.os.AsyncTask;
 import android.util.Log;
 
 public class Index {
 	private IndexDB indexdb;
 	private Context ctx;
-	private Handler mHandler = new Handler();
 	private ProgressDialog d;
-	private Thread t = null;
+	private ParseTask task = null;
 	
 	public Index(Context ctx) throws FileNotFoundException {
 		this.ctx = ctx;
@@ -55,6 +54,30 @@ public class Index {
 		 * and window's context is subject to change over rotations. */
 		indexdb = new IndexDB(ctx.getApplicationContext());
 	}
+	
+	private int getRemoteWordCount() {
+		try {
+			URL url = new URL(ctx.getString(R.string.wordcounturl));
+			HttpURLConnection http = (HttpURLConnection) url.openConnection();
+			http.connect();
+			
+			String data = "";
+			int buf = 0;
+			
+			while ((buf = http.getInputStream().read()) != -1) {
+				data += (char)buf;
+			}
+		
+			return Integer.valueOf(data);
+		} catch (NumberFormatException e) {
+			Log.e("libstardict", "Error while parsing word count integer : "+e.toString()+", setting at 0...");
+			return 0;
+		} catch (IOException e) {
+			Log.e("libstardict", "Error while fetching word count : "+e.toString()+", setting at 0...");
+			return 0;
+		}
+	}
+	
 	
 	public void open() {
 		/* If the thread is already launched, the db is locked so we would
@@ -76,33 +99,24 @@ public class Index {
 			c = null; /* Trash the object, telling the GC to free memory at the next run.
 					   * This function is running for a long time and we want to consume the less memory possible. */
 			
+			
+			
 			d = new ProgressDialog(ctx);
 			d.setTitle("Construction de l'index");
 			d.setMessage("Veuillez patienter, téléchargement et construction de l'index (peut prendre plusieurs minutes) ...");
-			d.setIndeterminate(true);
+			d.setIndeterminate(false);
+			
+			d.setMax(getRemoteWordCount());
+			d.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			
 			d.setCancelable(false);
 			d.show();
 			
 			// If the thread is already launching, we're only showing the ProgressDialog
-			if (this.t == null || this.t.isAlive() == false) {
+			if (this.task == null) {
 				Log.i("libstardict", "First run, will fill SQLite index from .idx ...");
-				this.t = new Thread(new Runnable() {			
-					SQLiteDatabase db;
-					
-					public void run() {
-						db = indexdb.getWritableDatabase();
-						parse(db);
-						db.close();
-						
-						mHandler.post(new Runnable() {
-							public void run() {
-								d.dismiss();
-								indexdb.setFilled();
-							}
-						});
-					}
-				});
-				t.start();
+				task = new ParseTask();
+				task.execute();
 			}
 		}
 	}
@@ -179,76 +193,100 @@ public class Index {
 	}
 	
 	// Parse the .idx file and fill the data in the SQLite db
-	private void parse(SQLiteDatabase database) {
-		Log.d("libstardict","Beginning parsing index ...");
+	private class ParseTask extends AsyncTask<Object, Object, Boolean> {
+		SQLiteDatabase database;
 		
-		int buf;
-		ByteBuffer bbuf = ByteBuffer.allocate(8);
-		ByteBuffer charbuf = ByteBuffer.allocate(8);
-		CharsetDecoder ch = Charset.forName("UTF-8").newDecoder()
-							.onMalformedInput(CodingErrorAction.REPLACE)
-							.onUnmappableCharacter(CodingErrorAction.REPLACE);
-		
-		int counter = 0;
-		
-		database.beginTransaction();
-		
-		SQLiteStatement stm = database.compileStatement("INSERT INTO words (word, offset, size) VALUES (?, ?, ?)");
-		
-		try {
-			URL url = new URL(ctx.getString(R.string.indexurl));
-			HttpURLConnection http = (HttpURLConnection) url.openConnection();
-			http.connect();
-			BufferedInputStream fis = new BufferedInputStream(http.getInputStream());
+		@Override
+		protected Boolean doInBackground(Object... arg0) {
+			database = indexdb.getWritableDatabase();
 			
-			while (true) {
-				counter++;
+			Log.d("libstardict","Beginning parsing index ...");
+			
+			// Begin by purging the index, I prefer being careful : a messy db is a slow db
+			database.execSQL("DELETE FROM words");
+			
+			int buf;
+			ByteBuffer bbuf = ByteBuffer.allocate(8);
+			ByteBuffer charbuf = ByteBuffer.allocate(8);
+			CharsetDecoder ch = Charset.forName("UTF-8").newDecoder()
+								.onMalformedInput(CodingErrorAction.REPLACE)
+								.onUnmappableCharacter(CodingErrorAction.REPLACE);
+			
+			int counter = 0;
+			
+			database.beginTransaction();
+			
+			SQLiteStatement stm = database.compileStatement("INSERT INTO words (word, offset, size) VALUES (?, ?, ?)");
+			
+			try {
+				URL url = new URL(ctx.getString(R.string.indexurl));
+				HttpURLConnection http = (HttpURLConnection) url.openConnection();
+				http.connect();
+				BufferedInputStream fis = new BufferedInputStream(http.getInputStream());
 				
-				buf = fis.read();
-				while (buf != '\u0000' && buf != -1) {
-					charbuf = putBuffer(charbuf, (byte)buf);
+				while (true) {
+					counter++;
+					
 					buf = fis.read();
+					while (buf != '\u0000' && buf != -1) {
+						charbuf = putBuffer(charbuf, (byte)buf);
+						buf = fis.read();
+					}
+					
+					if (buf == -1)
+						break;
+					
+					charbuf.limit(charbuf.position());
+					charbuf.position(0);
+					stm.bindString(1, ch.decode(charbuf).toString());
+					
+					// Now get offset/size
+					if (fis.read(bbuf.array(),0,8) == -1) {
+						break;
+					}
+					
+					bbuf.position(0);
+					
+					stm.bindLong(2, bbuf.getInt());
+					stm.bindLong(3, bbuf.getInt());
+					
+					bbuf.clear();
+					
+					stm.executeInsert();
+					
+					if (counter % 100 == 0) {
+						d.setProgress(counter);
+						
+						if (counter % 10000 == 0)
+							Log.i("libstardict", String.format("%d words processed",counter));
+					}
+						
+					
+					charbuf.clear();
 				}
+				database.setTransactionSuccessful();
+				database.endTransaction();
+			} catch (IOException e){
+				e.printStackTrace();
 				
-				if (buf == -1)
-					break;
-				
-				charbuf.limit(charbuf.position());
-				charbuf.position(0);
-				stm.bindString(1, ch.decode(charbuf).toString());
-				
-				// Now get offset/size
-				if (fis.read(bbuf.array(),0,8) == -1) {
-					break;
-				}
-				
-				bbuf.position(0);
-				
-				stm.bindLong(2, bbuf.getInt());
-				stm.bindLong(3, bbuf.getInt());
-				
-				bbuf.clear();
-				
-				stm.executeInsert();
-				if (counter % 10000 == 0)
-					Log.i("libstardict", String.format("%d words processed",counter));
-				
-				charbuf.clear();
+				database.endTransaction();
+				indexdb.dropDatabase(database); // Will recreate index
 			}
-			database.setTransactionSuccessful();
-			database.endTransaction();
-		} catch (IOException e){
-			e.printStackTrace();
 			
-			database.endTransaction();
-			indexdb.dropDatabase(database); // Will recreate index
+			stm.close();
+			
+			Log.d("libstardict", String.format("Parsing finished : %d words processed", counter));
+			
+			return true;
 		}
 		
-		stm.close();
-		
-		Log.d("libstardict", String.format("Parsing finished : %d words processed", counter));
+		protected void onPostExecute(Boolean result) {
+			d.dismiss();
+			database.close();
+			indexdb.setFilled();
+		}
 	}
-
+	
 	public void storeHistory(String word) {
 		SQLiteDatabase db = indexdb.getWritableDatabase();
 		Date date = new Date();
