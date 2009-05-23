@@ -103,7 +103,7 @@ public class Index {
 			
 			d = new ProgressDialog(ctx);
 			d.setTitle("Construction de l'index");
-			d.setMessage("Veuillez patienter, téléchargement et construction de l'index (peut prendre plusieurs minutes) ...");
+			d.setMessage("Veuillez patienter, téléchargement et construction de l'index ...");
 			d.setIndeterminate(false);
 			
 			d.setMax(getRemoteWordCount());
