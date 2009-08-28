@@ -10,21 +10,29 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />	
 			</intent-filter>
-			
-        	<intent-filter>
-        		<action android:name="android.intent.action.SEARCH"></action>
-				<category android:name="android.intent.category.DEFAULT"></category>
-			</intent-filter>
-			
-			<meta-data android:name="android.app.searchable" android:resource="@xml/searchable"></meta-data>
 		</activity>
 		
-		<meta-data android:name="android.app.default_searchable" android:value=".littre" />
-    <activity android:name="Definition"><intent-filter><action android:name="android.intent.action.VIEW"></action>
-</intent-filter>
-</activity>
-</application>
-<uses-permission android:name="android.permission.INTERNET"></uses-permission>
+		<meta-data android:name="android.app.default_searchable" android:value=".SearchActivity" />
+		
+    	<activity android:name="Definition">
+    		<intent-filter>
+    			<action android:name="android.intent.action.VIEW" />
+			</intent-filter>
+		</activity>
 
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
+		<activity android:name="GetLetterActivity"></activity>
+		<activity android:name="HistoryActivity"></activity>
+		<activity android:name="SearchActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <meta-data android:name="android.app.searchable" 
+                       android:resource="@xml/searchable" />
+		</activity>
+	</application>
+
+	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
+
 </manifest> 
