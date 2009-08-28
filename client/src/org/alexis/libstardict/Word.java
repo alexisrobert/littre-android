@@ -22,9 +22,9 @@ import java.io.Serializable;
 public class Word implements Serializable {
 	private static final long serialVersionUID = 4473046261681389738L;
 	
-	private String name;
-	private long offset;
-	private int size;
+	public String name; // It's public to be more easily read/written from JNI.
+	public long offset;
+	public int size;
 	
 	public Word() {}
 	

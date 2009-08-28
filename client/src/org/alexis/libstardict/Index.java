@@ -18,14 +18,12 @@
 package org.alexis.libstardict;
 
 import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.ByteBuffer;
-import java.nio.charset.Charset;
-import java.nio.charset.CharsetDecoder;
-import java.nio.charset.CodingErrorAction;
 import java.util.Date;
 import java.util.Vector;
 
@@ -36,7 +34,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteStatement;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -45,7 +42,10 @@ public class Index {
 	private IndexDB indexdb;
 	private Context ctx;
 	private ProgressDialog d;
-	private ParseTask task = null;
+	private DownloadTask task = null;
+	
+	@SuppressWarnings("unused")
+	private String indexpath; // Here for JNI.
 	
 	public Index(Context ctx) throws FileNotFoundException {
 		this.ctx = ctx;
@@ -53,31 +53,10 @@ public class Index {
 		/* The db only need to rely on Application context
 		 * and window's context is subject to change over rotations. */
 		indexdb = new IndexDB(ctx.getApplicationContext());
-	}
-	
-	private int getRemoteWordCount() {
-		try {
-			URL url = new URL(ctx.getString(R.string.wordcounturl));
-			HttpURLConnection http = (HttpURLConnection) url.openConnection();
-			http.connect();
-			
-			String data = "";
-			int buf = 0;
-			
-			while ((buf = http.getInputStream().read()) != -1) {
-				data += (char)buf;
-			}
 		
-			return Integer.valueOf(data);
-		} catch (NumberFormatException e) {
-			Log.e("libstardict", "Error while parsing word count integer : "+e.toString()+", setting at 0...");
-			return 0;
-		} catch (IOException e) {
-			Log.e("libstardict", "Error while fetching word count : "+e.toString()+", setting at 0...");
-			return 0;
-		}
+		System.loadLibrary("littre");
+		this.indexpath = new File(indexdb.indexDir(), "XMLittre.idx").getAbsolutePath();
 	}
-	
 	
 	public void open() {
 		/* If the thread is already launched, the db is locked so we would
@@ -99,14 +78,11 @@ public class Index {
 			c = null; /* Trash the object, telling the GC to free memory at the next run.
 					   * This function is running for a long time and we want to consume the less memory possible. */
 			
-			
-			
 			d = new ProgressDialog(ctx);
-			d.setTitle("Construction de l'index");
-			d.setMessage("Veuillez patienter, téléchargement et construction de l'index ...");
+			d.setTitle("Téléchargement de l'index");
+			d.setMessage("Veuillez patienter, téléchargement de l'index ...");
 			d.setIndeterminate(false);
 			
-			d.setMax(getRemoteWordCount());
 			d.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
 			
 			d.setCancelable(false);
@@ -114,8 +90,8 @@ public class Index {
 			
 			// If the thread is already launching, we're only showing the ProgressDialog
 			if (this.task == null) {
-				Log.i("libstardict", "First run, will fill SQLite index from .idx ...");
-				task = new ParseTask();
+				Log.i("libstardict", "First run, will download index ...");
+				task = new DownloadTask();
 				task.execute();
 			}
 		}
@@ -131,32 +107,24 @@ public class Index {
 		if (this.d != null) this.d.dismiss();
 	}
 	
+	public native String[] getRawWords(String query);
+	
 	public Vector<String> getWords(String query) {
-		return wordsQuery("SELECT word FROM words WHERE word LIKE ?", new String[] {query+"%"});
+		String[] words = getRawWords(query);
+		Vector<String> data = new Vector<String>();
+		
+		for (int i = 0; i < words.length; i++) {
+			data.add(words[i]);
+		}
+		
+		return data;
 	}
 	
 	public Vector<String> getHistory() {
 		return wordsQuery("SELECT word FROM recent_history", new String[]{});
 	}
 	
-	public Word getWord(String name) {
-		Word w = new Word();
-		
-		SQLiteDatabase db = indexdb.getReadableDatabase();
-		Cursor c = db.rawQuery("SELECT word, offset, size FROM words WHERE word = ?", new String[] {name});
-		c.moveToFirst();
-		
-		w.setName(c.getString(0));
-		w.setOffset(c.getInt(1));
-		w.setSize(c.getInt(2));
-		
-		Log.d("libstardict", w.toString());
-		
-		c.close();
-		db.close();
-		
-		return w;
-	}
+	public native Word getWord(String name);
 	
 	private Vector<String> wordsQuery(String sql, String[] params) {
 		Vector<String> data = new Vector<String>();
@@ -175,115 +143,44 @@ public class Index {
 		return data;
 	}
 	
-	/* Put char in a buffer. If the buffer is too big, double its capacity
-	 * The buffer will so have an 2^n growth rate, which is exponential.
-	 * This is a very simple dynamic buffer implementation. */
-	private ByteBuffer putBuffer(ByteBuffer charbuf, byte data) {
-		if (charbuf.hasRemaining() == false) {
-			Log.d("libstardict", String.format("Buffer capacity size was increased from %d to %d",
-					charbuf.capacity(), charbuf.capacity()*2));
-			ByteBuffer newbytebuf = ByteBuffer.allocate(charbuf.capacity()*2);
-			newbytebuf.put(charbuf.array());
-			newbytebuf.put(data);
-			return newbytebuf;
-		} else {
-			charbuf.put(data);
-			return charbuf;
-		}
-	}
-	
-	// Parse the .idx file and fill the data in the SQLite db
-	private class ParseTask extends AsyncTask<Object, Object, Boolean> {
-		SQLiteDatabase database;
-		
+	// Download the .idx
+	private class DownloadTask extends AsyncTask<Object, Object, Boolean> {
 		@Override
 		protected Boolean doInBackground(Object... arg0) {
-			database = indexdb.getWritableDatabase();
-			
-			Log.d("libstardict","Beginning parsing index ...");
-			
-			// Begin by purging the index, I prefer being careful : a messy db is a slow db
-			database.execSQL("DELETE FROM words");
-			
-			int buf;
-			ByteBuffer bbuf = ByteBuffer.allocate(8);
-			ByteBuffer charbuf = ByteBuffer.allocate(8);
-			CharsetDecoder ch = Charset.forName("UTF-8").newDecoder()
-								.onMalformedInput(CodingErrorAction.REPLACE)
-								.onUnmappableCharacter(CodingErrorAction.REPLACE);
-			
-			int counter = 0;
-			
-			database.beginTransaction();
-			
-			SQLiteStatement stm = database.compileStatement("INSERT INTO words (word, offset, size) VALUES (?, ?, ?)");
+			Log.d("libstardict","Beginning downloading index ...");
 			
 			try {
 				URL url = new URL(ctx.getString(R.string.indexurl));
 				HttpURLConnection http = (HttpURLConnection) url.openConnection();
 				http.connect();
 				BufferedInputStream fis = new BufferedInputStream(http.getInputStream());
+				FileOutputStream fos = new FileOutputStream(new File(indexdb.indexDir(),"XMLittre.idx.tmp"));
 				
-				while (true) {
-					counter++;
-					
-					buf = fis.read();
-					while (buf != '\u0000' && buf != -1) {
-						charbuf = putBuffer(charbuf, (byte)buf);
-						buf = fis.read();
-					}
-					
-					if (buf == -1)
-						break;
-					
-					charbuf.limit(charbuf.position());
-					charbuf.position(0);
-					stm.bindString(1, ch.decode(charbuf).toString());
-					
-					// Now get offset/size
-					if (fis.read(bbuf.array(),0,8) == -1) {
-						break;
-					}
-					
-					bbuf.position(0);
-					
-					stm.bindLong(2, bbuf.getInt());
-					stm.bindLong(3, bbuf.getInt());
-					
-					bbuf.clear();
-					
-					stm.executeInsert();
-					
-					if (counter % 100 == 0) {
-						d.setProgress(counter);
-						
-						if (counter % 10000 == 0)
-							Log.i("libstardict", String.format("%d words processed",counter));
-					}
-						
-					
-					charbuf.clear();
+				byte[] bytes = new byte[20480];
+				long progress = 0;
+				long readBytes = 0;
+				
+				while ((readBytes = fis.read(bytes)) > 0) {
+					progress += readBytes;
+					d.setProgress((int)(((float)progress/http.getContentLength())*100));
+					fos.write(bytes);
 				}
-				database.setTransactionSuccessful();
-				database.endTransaction();
+				
+				fis.close();
+				fos.close();
 			} catch (IOException e){
 				e.printStackTrace();
-				
-				database.endTransaction();
-				indexdb.dropDatabase(database); // Will recreate index
 			}
 			
-			stm.close();
+			new File(indexdb.indexDir(),"XMLittre.idx.tmp").renameTo(new File(indexdb.indexDir(),"XMLittre.idx"));
 			
-			Log.d("libstardict", String.format("Parsing finished : %d words processed", counter));
+			Log.d("libstardict", "Download finished!");
 			
 			return true;
 		}
 		
 		protected void onPostExecute(Boolean result) {
 			d.dismiss();
-			database.close();
-			indexdb.setFilled();
 		}
 	}
 	
@@ -292,7 +189,7 @@ public class Index {
 		Date date = new Date();
 		
 		/* Nothing else is needed !
-		 * Old history wiping is entierly managed by SQLite's 
+		 * Old history wiping is completely managed by SQLite's 
 		 */
 		db.execSQL("INSERT INTO history (word, timestamp) VALUES (?,?)", 
 				new String[] {word, String.valueOf(date.getTime())});

@@ -152,6 +152,8 @@ public class littre extends ListActivity {
         		});
         	}
         }).start();
+        
+        getListView().setFastScrollEnabled(true);
     }
     
     protected void onSaveInstanceState(Bundle outState) {
@@ -269,6 +271,7 @@ public class littre extends ListActivity {
     	
 		@Override
 		protected Boolean doInBackground(Object... params) {
+			// Parameter checking
 			if (!(params.length >= 4) || !(params[0] instanceof String)
 					|| !(params[1] instanceof Index)
 					|| !(params[2] instanceof ProgressDialog)
