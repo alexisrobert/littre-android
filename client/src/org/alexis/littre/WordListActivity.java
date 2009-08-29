@@ -51,7 +51,7 @@ public class WordListActivity extends ListActivity {
 				maxoffset = Math.min(2, objects.get(i).length());
 				if (!objects.get(i).substring(0, maxoffset).equals(last_section)){
 					last_section = objects.get(i).substring(0, maxoffset);
-					sections.add(objects.get(i).substring(0, maxoffset)+"-");
+					sections.add(last_section.endsWith("-") ? last_section : (last_section+"-"));
 					
 					positions.add(i);
 				}
