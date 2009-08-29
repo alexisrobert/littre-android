@@ -11,6 +11,8 @@ public class GetLetterActivity extends WordListActivity {
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
+    	this.mTextFiltering = false; // Text filtering uses too much CPU here, we have too big lists.
+    	
     	super.onCreate(savedInstanceState);
     	
     	// We only search if we have no backup.

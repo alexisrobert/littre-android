@@ -14,4 +14,5 @@
 <string name="no_network_idx_message">Vous devez être connectés pour télécharger l\'index (construit au premier lancement).</string>
 <string name="loadingdef_title">Recherche de votre définition</string>
 <string name="loadingdef_message">Veuillez patienter ...</string>
+<string name="results_title">%s - %d résultats</string>
 </resources>

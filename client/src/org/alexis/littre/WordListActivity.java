@@ -31,6 +31,7 @@ public class WordListActivity extends ListActivity {
     private List<String> words;
     private GetDefinitionTask task;
     private boolean mShowHistory = true;
+    protected boolean mTextFiltering = true;
     
     private class MyAdapter extends ArrayAdapter<String> implements SectionIndexer {
     	String[] sections;
@@ -173,6 +174,9 @@ public class WordListActivity extends ListActivity {
 		
 		// Enables the little thumb fast scroll widget
         getListView().setFastScrollEnabled(true);
+        
+        // Enables filtering
+        getListView().setTextFilterEnabled(mTextFiltering);
     }
     
     // Update the ArrayAdapter containing the words in the ListActivity
@@ -185,6 +189,15 @@ public class WordListActivity extends ListActivity {
     		this.words = words;
     	
     	setListAdapter(wordlist);
+    }
+    
+    public boolean isTextFilterEnabled() {
+    	return mTextFiltering;
+    }
+    
+    public void setTextFilterEnabled(boolean state) {
+    	this.mTextFiltering = state;
+    	getListView().setTextFilterEnabled(state);
     }
     
     public boolean isShowingHistory() {
@@ -260,5 +273,14 @@ public class WordListActivity extends ListActivity {
 		d.show();
 		
     	task.execute(word, idx, d, new Boolean(finish));
+    }
+    
+    // Disable searching on WordListActivity when filtering is enabled
+    @Override
+    public boolean onSearchRequested() {
+       if (mTextFiltering)
+    	   return false;
+       else
+    	   return super.onSearchRequested();
     }
 }

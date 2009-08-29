@@ -50,6 +50,7 @@ public class SearchActivity extends WordListActivity {
 						
 						default:
 							setWords((List<String>)words);
+							setTitle(String.format(getString(R.string.results_title), getString(R.string.app_name), words.size()));
 							break;
 						}
     				}
