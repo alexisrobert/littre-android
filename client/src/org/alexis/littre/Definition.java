@@ -41,6 +41,11 @@ public class Definition extends Activity {
         setContentView(R.layout.definition);
         
     	word = (Word) getIntent().getSerializableExtra("word");
+    	if (word == null) {
+    		finish();
+    		return;
+    	}
+    	
     	setTitle(word.getName());
         
         web = (WebView)findViewById(R.id.webview);

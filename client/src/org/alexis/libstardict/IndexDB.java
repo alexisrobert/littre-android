@@ -22,13 +22,14 @@ import java.io.File;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class IndexDB extends SQLiteOpenHelper {
 	private static int HISTORY_DEPTH = 50; // TODO: Make this configurable
 	private File indexDir = null;
 	
 	public IndexDB(Context context) {
-		super(context, "index.db", null, 2);
+		super(context, "index.db", null, 3);
 		indexDir = context.getFilesDir();
 	}
 	
@@ -58,6 +59,7 @@ public class IndexDB extends SQLiteOpenHelper {
 	
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+		Log.i("littre", "Upgrading database ...");
 		db.execSQL("DROP TABLE IF EXISTS words");
 	}
 	

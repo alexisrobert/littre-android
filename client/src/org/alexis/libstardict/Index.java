@@ -53,18 +53,15 @@ public class Index {
 		/* The db only need to rely on Application context
 		 * and window's context is subject to change over rotations. */
 		indexdb = new IndexDB(ctx.getApplicationContext());
+		indexdb.getWritableDatabase().close(); // Open a writable database to enable upgrading.
 		
 		System.loadLibrary("littre");
 		this.indexpath = new File(indexdb.indexDir(), "XMLittre.idx").getAbsolutePath();
 	}
 	
-	public void open() {
-		/* If the thread is already launched, the db is locked so we would
-		 * enter into a mutex waiting. And if the .tofill attribute is set to
-		 * true, we don't need to update it because that means the Thread
-		 * is currently filling the DB (i don't think i'm crystal clear here :) ). */
-		
+	public void open() {		
 		if (indexdb.needsFilling() == true) {
+			
 	    	ConnectivityManager c = (ConnectivityManager)ctx.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 	    	
 			if (c.getActiveNetworkInfo() == null || c.getActiveNetworkInfo().isAvailable() == false) {
