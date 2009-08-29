@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 public class WordListActivity extends ListActivity {
@@ -30,6 +31,58 @@ public class WordListActivity extends ListActivity {
     private List<String> words;
     private GetDefinitionTask task;
     private boolean mShowHistory = true;
+    
+    private class MyAdapter extends ArrayAdapter<String> implements SectionIndexer {
+    	String[] sections;
+    	Integer[] positions;
+    	
+		public MyAdapter(Context context, int resource, int textViewResourceId,
+				List<String> objects) {
+			super(context, resource, textViewResourceId, objects);
+			
+			Vector<String> sections = new Vector<String>();
+			Vector<Integer> positions = new Vector<Integer>();
+			
+			String last_section = "";
+			int maxoffset = 0;
+			
+			for (int i = 0; i < objects.size(); i++) {
+				maxoffset = Math.min(2, objects.get(i).length());
+				if (!objects.get(i).substring(0, maxoffset).equals(last_section)){
+					last_section = objects.get(i).substring(0, maxoffset);
+					sections.add(objects.get(i).substring(0, maxoffset)+"-");
+					
+					positions.add(i);
+				}
+			}
+			
+			this.sections = (String[])sections.toArray(new String[sections.size()]);
+			this.positions = (Integer[])positions.toArray(new Integer[positions.size()]);
+		}
+		
+		@Override
+		public int getPositionForSection(int section) {
+			return positions[section];
+		}
+		
+		@Override
+		public int getSectionForPosition(int position) {
+			int section = 0;
+			for (int i = 0; i < positions.length; i++) {
+				if (positions[i] == position) {
+					section = i;
+					break;
+				}
+			}
+			
+			return section;
+		}
+		
+		@Override
+		public Object[] getSections() {
+			return this.sections;
+		}
+    }
     
     private class GetDefinitionTask extends AsyncTask<Object, Object, Boolean> {
     	Intent i;
@@ -125,7 +178,7 @@ public class WordListActivity extends ListActivity {
     // Update the ArrayAdapter containing the words in the ListActivity
     public void setWords(List<String> words) {
     	// If words list is empty, fill-in with the alphabet
-    	ArrayAdapter<String> wordlist = new ArrayAdapter<String>(this, R.layout.wordlistitem, R.id.word, words);
+    	MyAdapter wordlist = new MyAdapter(this, R.layout.wordlistitem, R.id.word, words);
     	
     	// Yes we compare pointers adresses.
     	if (words != this.words)

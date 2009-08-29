@@ -62,12 +62,8 @@ public class Definition extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        MenuItem menuit = menu.add(0, Menu.FIRST, 0, "Recherche");
-        menuit.setIcon(android.R.drawable.ic_menu_search);
-    	MenuItem menuit_share = menu.add(0, Menu.FIRST+1, 0, "Partager");
+    	MenuItem menuit_share = menu.add(0, Menu.FIRST, 0, "Partager");
     	menuit_share.setIcon(android.R.drawable.ic_menu_share);
-    	MenuItem menuit_hist = menu.add(0, Menu.FIRST+2, 0, "Historique");
-    	menuit_hist.setIcon(android.R.drawable.ic_menu_recent_history);
         return true;
     }
     
@@ -75,19 +71,12 @@ public class Definition extends Activity {
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         switch(item.getItemId()) {
         case Menu.FIRST:
-        	onSearchRequested();
-            return true;
-        case Menu.FIRST+1:
         	// I would love to send full-text definitions. But the WebView API doesn't permit this.
         	
         	Intent i2 = new Intent(Intent.ACTION_SEND);
         	i2.setType("text/plain");
         	i2.putExtra(Intent.EXTRA_TEXT, String.format(XMLITTRE_URL, Uri.encode(word.getName())));
         	startActivity(i2);
-        	return true;
-        case Menu.FIRST+2:
-        	Intent i = new Intent(littre.INTENT_GET_HISTORY, null, getApplicationContext(), littre.class);
-        	startActivity(i);
         	return true;
         }
         
