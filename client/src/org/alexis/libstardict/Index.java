@@ -157,13 +157,13 @@ public class Index {
 				FileOutputStream fos = new FileOutputStream(new File(indexdb.indexDir(),"XMLittre.idx.tmp"));
 				
 				byte[] bytes = new byte[20480];
-				long progress = 0;
-				long readBytes = 0;
+				int progress = 0;
+				int readBytes = 0;
 				
 				while ((readBytes = fis.read(bytes)) > 0) {
 					progress += readBytes;
 					d.setProgress((int)(((float)progress/http.getContentLength())*100));
-					fos.write(bytes);
+					fos.write(bytes, 0, readBytes);
 				}
 				
 				fis.close();
