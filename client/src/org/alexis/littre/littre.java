@@ -59,19 +59,15 @@ public class littre extends ListActivity {
         intent = getIntent();
         
         /* Restoring serialized state */
-        try {
-        	if (getLastNonConfigurationInstance() == null) {
-        		idx = new Index(this);
-        	} else {
-        		// If we were rotating, we just need to refresh Index's context
-        		idx = (Index)getLastNonConfigurationInstance();
-        		idx.setContext(this);
-        	}
+        if (getLastNonConfigurationInstance() == null) {
+        	idx = new Index(this);
+        } else {
+        	// If we were rotating, we just need to refresh Index's context
+        	idx = (Index)getLastNonConfigurationInstance();
+        	idx.setContext(this);
+        }
         	
-        	idx.open();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+        idx.open();
 		
 		updateList();
     }

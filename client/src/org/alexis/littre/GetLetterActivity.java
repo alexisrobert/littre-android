@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Vector;
 
 import android.app.SearchManager;
+import android.database.Cursor;
 import android.os.Bundle;
 
 public class GetLetterActivity extends WordListActivity {
@@ -29,7 +30,13 @@ public class GetLetterActivity extends WordListActivity {
     		public void run() {
     			String search = getIntent().getExtras().getString(SearchManager.QUERY);
     			
-    			words = idx.getLetter(search);
+    			words = new Vector<String>();
+    			Cursor c = managedQuery(StardictProvider.LETTER_URI, null, null, new String[] {search}, null);
+    			c.moveToFirst();
+    			while (!c.isAfterLast()) {
+    				words.add(c.getString(0));
+    				c.moveToNext();
+    			}
     			
     			runOnUiThread(new Runnable() {
     				public void run() {

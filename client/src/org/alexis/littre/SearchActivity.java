@@ -7,6 +7,7 @@ import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
+import android.database.Cursor;
 import android.os.Bundle;
 
 // TODO: Use singleTop.
@@ -33,7 +34,13 @@ public class SearchActivity extends WordListActivity {
     		public void run() {
     			String search = getIntent().getExtras().getString(SearchManager.QUERY);
     			
-    			words = idx.getWords(search);
+    			words = new Vector<String>();
+    			Cursor c = managedQuery(StardictProvider.WORDS_URI, null, null, new String[] {search}, null);
+    			c.moveToFirst();
+    			while (!c.isAfterLast()) {
+    				words.add(c.getString(0));
+    				c.moveToNext();
+    			}
     			
     			runOnUiThread(new Runnable() {
     				public void run() {

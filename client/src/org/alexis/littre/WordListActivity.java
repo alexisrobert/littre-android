@@ -1,6 +1,5 @@
 package org.alexis.littre;
 
-import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Vector;
 
@@ -141,19 +140,15 @@ public class WordListActivity extends ListActivity {
         
         /* Restoring serialized state */
         // 1. Index
-        try {
-        	if (getLastNonConfigurationInstance() == null) {
-        		idx = new Index(this); // TODO: Why do we instanciate index each time ? Maybe a singleton ?
-        	} else {
-        		// If we were rotating, we just need to refresh Index's context
-        		idx = (Index)getLastNonConfigurationInstance();
-        		idx.setContext(this);
-        	}
+        if (getLastNonConfigurationInstance() == null) {
+        	idx = new Index(this); // TODO: Why do we instanciate index each time ? Maybe a singleton ?
+        } else {
+        	// If we were rotating, we just need to refresh Index's context
+        	idx = (Index)getLastNonConfigurationInstance();
+        	idx.setContext(this);
+        }
         	
-        	idx.open();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
+        idx.open();
 		
 		// 2. Word list
 		if (savedInstanceState != null) {

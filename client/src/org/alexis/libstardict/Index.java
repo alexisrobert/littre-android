@@ -19,7 +19,6 @@ package org.alexis.libstardict;
 
 import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -47,7 +46,7 @@ public class Index {
 	@SuppressWarnings("unused")
 	private String indexpath; // Here for JNI purposes.
 	
-	public Index(Context ctx) throws FileNotFoundException {
+	public Index(Context ctx) {
 		this.ctx = ctx;
 		
 		/* The db only need to rely on Application context
@@ -150,6 +149,10 @@ public class Index {
 		db.close();
 		
 		return data;
+	}
+	
+	public IndexDB getIndexDB() {
+		return this.indexdb;
 	}
 	
 	// Download the .idx

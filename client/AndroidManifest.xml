@@ -30,10 +30,14 @@
             <meta-data android:name="android.app.searchable" 
                        android:resource="@xml/searchable" />
 		</activity>
-	</application>
+		<provider android:name="StardictProvider" android:authorities="org.alexis.littre.stardictprovider"></provider>
+	<activity android:name="HistoryLiveFolder"><intent-filter><action android:name="android.intent.action.CREATE_LIVE_FOLDER"></action>
+<category android:name="android.intent.category.DEFAULT"></category>
+</intent-filter>
+</activity>
+</application>
 
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>
-
 
 </manifest> 
