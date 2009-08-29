@@ -191,6 +191,10 @@ public class WordListActivity extends ListActivity {
     	setListAdapter(wordlist);
     }
     
+    public List<String> getWords() {
+    	return this.words;
+    }
+    
     public boolean isTextFilterEnabled() {
     	return mTextFiltering;
     }

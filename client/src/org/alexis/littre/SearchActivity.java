@@ -18,8 +18,10 @@ public class SearchActivity extends WordListActivity {
     	super.onCreate(savedInstanceState);
     	
     	// We only search if we have no backup.
-    	if (savedInstanceState != null)
+    	if (savedInstanceState != null) {
+    		setResultsTitle();
     		return;
+    	}
     	
     	// We only accept valid search intents
     	if (getIntent().getStringExtra(SearchManager.QUERY) == null)
@@ -50,7 +52,7 @@ public class SearchActivity extends WordListActivity {
 						
 						default:
 							setWords((List<String>)words);
-							setTitle(String.format(getString(R.string.results_title), getString(R.string.app_name), words.size()));
+							setResultsTitle();
 							break;
 						}
     				}
@@ -71,5 +73,11 @@ public class SearchActivity extends WordListActivity {
 			}
 		});
 		alert.show();
+    }
+    
+    // Warning, this method uses getWord() which refers to WordListActivity's words children, not ours.
+    private void setResultsTitle() {
+    	if (getWords() != null)
+    		setTitle(String.format(getString(R.string.results_title), getString(R.string.app_name), getWords().size()));
     }
 }
