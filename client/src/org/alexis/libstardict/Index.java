@@ -45,7 +45,7 @@ public class Index {
 	private DownloadTask task = null;
 	
 	@SuppressWarnings("unused")
-	private String indexpath; // Here for JNI.
+	private String indexpath; // Here for JNI purposes.
 	
 	public Index(Context ctx) throws FileNotFoundException {
 		this.ctx = ctx;
@@ -108,9 +108,21 @@ public class Index {
 	}
 	
 	public native String[] getRawWords(String query);
+	public native String[] getRawLetter(String query);
 	
 	public Vector<String> getWords(String query) {
 		String[] words = getRawWords(query);
+		Vector<String> data = new Vector<String>();
+		
+		for (int i = 0; i < words.length; i++) {
+			data.add(words[i]);
+		}
+		
+		return data;
+	}
+	
+	public Vector<String> getLetter(String query) {
+		String[] words = getRawLetter(query);
 		Vector<String> data = new Vector<String>();
 		
 		for (int i = 0; i < words.length; i++) {

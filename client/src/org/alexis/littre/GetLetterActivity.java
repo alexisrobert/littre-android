@@ -27,7 +27,7 @@ public class GetLetterActivity extends WordListActivity {
     		public void run() {
     			String search = getIntent().getExtras().getString(SearchManager.QUERY);
     			
-    			words = idx.getWords(search);
+    			words = idx.getLetter(search);
     			
     			runOnUiThread(new Runnable() {
     				public void run() {
