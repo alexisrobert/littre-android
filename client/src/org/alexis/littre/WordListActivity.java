@@ -274,13 +274,4 @@ public class WordListActivity extends ListActivity {
 		
     	task.execute(word, idx, d, new Boolean(finish));
     }
-    
-    // Disable searching on WordListActivity when filtering is enabled
-    @Override
-    public boolean onSearchRequested() {
-       if (mTextFiltering)
-    	   return false;
-       else
-    	   return super.onSearchRequested();
-    }
 }
