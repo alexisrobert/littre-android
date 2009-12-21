@@ -22,10 +22,12 @@ import java.util.HashMap;
 import org.alexis.libstardict.Index;
 import org.alexis.libstardict.WordCursor;
 
+import android.app.SearchManager;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
+import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
@@ -49,10 +51,18 @@ public class StardictProvider extends ContentProvider {
 	private static final int LETTER = 20;
 	private static final int HISTORY = 30;
 	private static final int HISTORY_LIVEFOLDER = 31;
+	private static final int SEARCH_SUGGEST = 40;
 	
 	private static final String AUTHORITY = "org.alexis.littre.stardictprovider";
 	private static final UriMatcher URI_MATCHER = new UriMatcher(0);
 	private Index idx = null;
+    
+	private static final String[] SEARCH_COLUMNS = {
+        "_id",  // must include this column
+        SearchManager.SUGGEST_COLUMN_TEXT_1,
+        SearchManager.SUGGEST_COLUMN_INTENT_DATA,
+        };
+	
 	
 	// Unused in this class, for global lisibility
 	public static final Uri WORDS_URI = 
@@ -70,6 +80,8 @@ public class StardictProvider extends ContentProvider {
 		URI_MATCHER.addURI(AUTHORITY, "letter", LETTER);
 		URI_MATCHER.addURI(AUTHORITY, "history", HISTORY);
 		URI_MATCHER.addURI(AUTHORITY, "history/livefolder", HISTORY_LIVEFOLDER);
+		URI_MATCHER.addURI(AUTHORITY, SearchManager.SUGGEST_URI_PATH_QUERY, SEARCH_SUGGEST);
+		URI_MATCHER.addURI(AUTHORITY, SearchManager.SUGGEST_URI_PATH_QUERY+"/*", SEARCH_SUGGEST);
 		
 	    LIVE_FOLDER_PROJECTION_MAP = new HashMap<String,String>();
 	    LIVE_FOLDER_PROJECTION_MAP.put(LiveFolders._ID, "word" +
@@ -125,6 +137,28 @@ public class StardictProvider extends ContentProvider {
 				words = idx.getRawLetter(selectionArgs[0]);
 			
 			return new WordCursor(words);
+		case SEARCH_SUGGEST:
+			MatrixCursor cursor = new MatrixCursor(SEARCH_COLUMNS);
+			
+			if (uri.getLastPathSegment().equals(SearchManager.SUGGEST_URI_PATH_QUERY) == true ||
+					uri.getLastPathSegment().length() < 4) {
+				return cursor;
+			} else {
+				Log.d("libstardict", String.format("SEARCH SUGGEST : %s", uri.getLastPathSegment()));
+				String[] words2 = idx.getRawWords(uri.getLastPathSegment().toLowerCase());
+				long id = 0;
+				
+				for (String word : words2) {
+					id++;
+					cursor.addRow(new Object[] {
+						id,
+						word,
+						word
+					});
+				}
+				
+				return cursor;
+			}
 		case HISTORY:
 			SQLiteDatabase db = idx.getIndexDB().getReadableDatabase();
 			Cursor c = db.rawQuery("SELECT word FROM recent_history", new String[]{});

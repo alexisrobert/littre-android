@@ -43,7 +43,7 @@ public class SearchActivity extends WordListActivity {
     	}
     	
     	// We only accept valid search intents
-    	if (getIntent().getStringExtra(SearchManager.QUERY) == null)
+    	if (getIntent().getStringExtra(SearchManager.QUERY) == null && getIntent().getDataString() == null)
     		Log.d("littre", getIntent().toURI());
     	
         setProgressBarIndeterminateVisibility(true);
@@ -51,6 +51,10 @@ public class SearchActivity extends WordListActivity {
     	new Thread(new Runnable() {
     		public void run() {
     			String search = getIntent().getExtras().getString(SearchManager.QUERY);
+    			
+    			// For search suggestions
+    			if (search == null)
+    				search = getIntent().getDataString();
     			
     			words = new Vector<String>();
     			Cursor c = managedQuery(StardictProvider.WORDS_URI, null, null, new String[] {search}, null);

@@ -1,4 +1,8 @@
 <searchable xmlns:android="http://schemas.android.com/apk/res/android"
-    android:label="@string/searchlabel"
-    android:hint="@string/searchhint">
+	android:label="@string/searchlabel"
+	android:hint="@string/searchhint"
+	android:searchSettingsDescription="@string/searching_description"
+	android:includeInGlobalSearch="true"
+	android:searchSuggestAuthority="org.alexis.littre.stardictprovider"
+	android:searchSuggestIntentAction="android.intent.action.SEARCH">
 </searchable>
