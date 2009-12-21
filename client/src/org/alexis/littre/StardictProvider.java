@@ -24,7 +24,7 @@ import android.util.Log;
  * content://org.alexis.littre.stardictprovider/words - maps to Index.getWords
  * content://org.alexis.littre.stardictprovider/letter - maps to Index.getLetter
  * content://org.alexis.littre.stardictprovider/history - maps to Index.getHistory
- * content://org.alexis.littre.stardictprovider/history_livefolder - you know ... stuff ... :p
+ * content://org.alexis.littre.stardictprovider/history/livefolder - you know ... stuff ... :p
  */
 
 public class StardictProvider extends ContentProvider {
@@ -35,7 +35,7 @@ public class StardictProvider extends ContentProvider {
 	
 	private static final String AUTHORITY = "org.alexis.littre.stardictprovider";
 	private static final UriMatcher URI_MATCHER = new UriMatcher(0);
-	private Index idx;
+	private Index idx = null;
 	
 	// Unused in this class, for global lisibility
 	public static final Uri WORDS_URI = 
@@ -45,7 +45,7 @@ public class StardictProvider extends ContentProvider {
 	public static final Uri HISTORY_URI = 
         Uri.parse("content://org.alexis.littre.stardictprovider/history");
 	public static final Uri HISTORY_LIVEFOLDER_URI = 
-        Uri.parse("content://org.alexis.littre.stardictprovider/history_livefolder");
+        Uri.parse("content://org.alexis.littre.stardictprovider/history/livefolder");
 	
 	private static final HashMap<String,String> LIVE_FOLDER_PROJECTION_MAP;
 	static {
@@ -84,7 +84,8 @@ public class StardictProvider extends ContentProvider {
 	
 	@Override
 	public boolean onCreate() {
-		idx = new Index(this.getContext());
+		if (this.idx == null)
+			idx = new Index(this.getContext());
 		return true;
 	}
 	
