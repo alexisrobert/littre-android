@@ -1,5 +1,5 @@
 /*
- * Stardict """library""" for Android (not so UI-independent :) )
+ * Littre dictionnary for Android
  * Copyright (C) 2009 Alexis ROBERT <alexis.robert@gmail.com>
  *
  * This program is free software: you can redistribute it and/or modify
