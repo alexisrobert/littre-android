@@ -15,5 +15,5 @@
 <string name="loadingdef_title">Recherche de votre définition</string>
 <string name="loadingdef_message">Veuillez patienter ...</string>
 <string name="results_title">%s - %d résultats</string>
-<string name="searching_description">Recherche dans le dictionnaire Littré</string>
+<string name="searching_description">Définitions du dictionnaire Littré</string>
 </resources>
