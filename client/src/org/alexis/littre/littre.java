@@ -17,7 +17,6 @@
 
 package org.alexis.littre;
 
-import java.io.FileNotFoundException;
 import java.util.Vector;
 
 import org.alexis.libstardict.Index;

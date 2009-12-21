@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 
 // TODO: Use singleTop.
 public class SearchActivity extends WordListActivity {
@@ -26,7 +27,7 @@ public class SearchActivity extends WordListActivity {
     	
     	// We only accept valid search intents
     	if (getIntent().getStringExtra(SearchManager.QUERY) == null)
-    		return;
+    		Log.d("littre", getIntent().toURI());
     	
         setProgressBarIndeterminateVisibility(true);
     	

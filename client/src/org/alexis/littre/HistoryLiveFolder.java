@@ -30,8 +30,9 @@ public class HistoryLiveFolder extends Activity {
     
     private static Intent createLiveFolder(Context context, Uri uri, String name, int icon) {
         final Intent intent = new Intent();
-        
         intent.setData(uri);
+        intent.putExtra(LiveFolders.EXTRA_LIVE_FOLDER_BASE_INTENT, new Intent(Intent.ACTION_SEARCH, Uri.parse("content://org.alexis.littre.stardictprovider/"),
+        		context.getApplicationContext(), SearchActivity.class));
         intent.putExtra(LiveFolders.EXTRA_LIVE_FOLDER_NAME, name);
         intent.putExtra(LiveFolders.EXTRA_LIVE_FOLDER_ICON,
                 Intent.ShortcutIconResource.fromContext(context, icon));
