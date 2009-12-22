@@ -132,7 +132,7 @@ public class StardictProvider extends ContentProvider {
 				return null;
 			
 			if (match == WORDS)
-				words = idx.getRawWords(selectionArgs[0]);
+				words = idx.getRawWords(formatQuery(selectionArgs[0]));
 			else
 				words = idx.getRawLetter(selectionArgs[0]);
 			
@@ -140,12 +140,13 @@ public class StardictProvider extends ContentProvider {
 		case SEARCH_SUGGEST:
 			MatrixCursor cursor = new MatrixCursor(SEARCH_COLUMNS);
 			
+			// We're avoiding flooding CPU with too long querys.
 			if (uri.getLastPathSegment().equals(SearchManager.SUGGEST_URI_PATH_QUERY) == true ||
-					uri.getLastPathSegment().length() < 4) {
+					formatQuery(uri.getLastPathSegment()).length() < 4) {
 				return cursor;
 			} else {
 				Log.d("libstardict", String.format("SEARCH SUGGEST : %s", uri.getLastPathSegment()));
-				String[] words2 = idx.getRawWords(uri.getLastPathSegment().toLowerCase());
+				String[] words2 = idx.getRawWords(formatQuery(uri.getLastPathSegment()));
 				long id = 0;
 				
 				for (String word : words2) {
@@ -178,6 +179,17 @@ public class StardictProvider extends ContentProvider {
 			return null;
 		}
 	}
+	
+    private String formatQuery(String input) {
+    	/* 
+    	 * Don't need to lower-case, this is done in C-land
+    	 * And maybe learn to do everything using 1 regexp :p
+    	 */
+    	
+    	String output = input.replaceAll("^[ ]*", ""); // Avoid side effects !
+    	output = output.replaceAll("[ ]*$", "");
+    	return output;
+    }
 	
 	@Override
 	public int update(Uri uri, ContentValues values, String selection,
