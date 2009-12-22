@@ -167,7 +167,7 @@ public class WordListActivity extends ListActivity {
         	idx = (Index)getLastNonConfigurationInstance();
         	idx.setContext(this);
         }
-        	
+        
         idx.open();
 		
 		// 2. Word list
@@ -230,8 +230,11 @@ public class WordListActivity extends ListActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-        if (mShowHistory == true) {
-        	MenuItem menuit_hist = menu.add(0, Menu.FIRST, 0, "Historique");
+    	MenuItem menuit_search = menu.add(0, Menu.FIRST, 0, "Rechercher");
+    	menuit_search.setIcon(android.R.drawable.ic_menu_search);
+    	
+        if (mShowHistory == true) {        	
+        	MenuItem menuit_hist = menu.add(0, Menu.FIRST+1, 1, "Historique");
         	menuit_hist.setIcon(android.R.drawable.ic_menu_recent_history);
         }
         
@@ -242,6 +245,10 @@ public class WordListActivity extends ListActivity {
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         switch(item.getItemId()) {
         case Menu.FIRST:
+        	onSearchRequested();
+        	return true;
+        	
+        case Menu.FIRST+1:
         	Intent i = new Intent(INTENT_GET_HISTORY, null, getApplicationContext(), HistoryActivity.class);
         	startActivity(i);
         	return true;
