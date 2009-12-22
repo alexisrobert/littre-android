@@ -41,8 +41,11 @@ import android.widget.SectionIndexer;
 import android.widget.TextView;
 
 public class WordListActivity extends ListActivity {
-	static final String INTENT_GET_HISTORY = "org.alexis.littre.GetHistory";
+	public static final String INTENT_GET_HISTORY = "org.alexis.littre.GetHistory";
+	public static final String INTENT_DEFINITION = "org.alexis.littre.DEFINITION";
+	
     static final String BUNDLE_WORDS_KEY = "words";
+    
     protected Index idx;
     private List<String> words;
     private GetDefinitionTask task;
@@ -122,7 +125,7 @@ public class WordListActivity extends ListActivity {
 			d = (ProgressDialog)params[2];
 			finish = (Boolean)params[3];
 			
-			i = new Intent(Intent.ACTION_VIEW, null, getApplicationContext(), Definition.class);
+			i = new Intent(INTENT_DEFINITION, null, getApplicationContext(), Definition.class);
 			i.putExtra("word", idx.getWord(word));
 			
 			return true;

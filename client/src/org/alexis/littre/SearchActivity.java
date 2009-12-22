@@ -23,6 +23,7 @@ import java.util.Vector;
 import android.app.AlertDialog;
 import android.app.SearchManager;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.DialogInterface.OnCancelListener;
 import android.database.Cursor;
 import android.os.Bundle;
@@ -43,18 +44,20 @@ public class SearchActivity extends WordListActivity {
     	}
     	
     	// We only accept valid search intents
-    	if (getIntent().getStringExtra(SearchManager.QUERY) == null && getIntent().getDataString() == null)
-    		Log.d("littre", getIntent().toURI());
+    	if (getIntent().getStringExtra(SearchManager.QUERY) == null ||
+    			(getIntent().getAction().equals(Intent.ACTION_VIEW) == true && getIntent().getDataString() == null))
+    		Log.d("littre", String.format("SearchActivity received an invalid intent : %s", getIntent().toURI()));
     	
         setProgressBarIndeterminateVisibility(true);
-    	
+        
+        if (getIntent().getAction().equals(Intent.ACTION_VIEW) == true) {
+        	fireShowIntent(getIntent().getDataString(), true);
+        	return;
+        }
+        
     	new Thread(new Runnable() {
     		public void run() {
     			String search = getIntent().getExtras().getString(SearchManager.QUERY);
-    			
-    			// For search suggestions
-    			if (search == null)
-    				search = getIntent().getDataString();
     			
     			words = new Vector<String>();
     			Cursor c = managedQuery(StardictProvider.WORDS_URI, null, null, new String[] {search}, null);

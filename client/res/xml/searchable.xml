@@ -4,5 +4,5 @@
 	android:searchSettingsDescription="@string/searching_description"
 	android:includeInGlobalSearch="true"
 	android:searchSuggestAuthority="org.alexis.littre.stardictprovider"
-	android:searchSuggestIntentAction="android.intent.action.SEARCH">
+	android:searchSuggestIntentAction="android.intent.action.VIEW">
 </searchable>
