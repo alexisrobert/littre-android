@@ -10,7 +10,8 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />	
 			</intent-filter>
-		</activity>
+		
+</activity>
 		
 		<meta-data android:name="android.app.default_searchable" android:value=".SearchActivity" />
 		
@@ -22,6 +23,15 @@
 
 		<activity android:name="GetLetterActivity"></activity>
 		<activity android:name="HistoryActivity"></activity>
+		<!-- We'll activate HistoryLiveFolder as soon as Android has a PROPER API for managing
+			 live folders Intents. WE DON'T WANT A NUMERIC _ID ! -->
+		<!-- <activity android:name="HistoryLiveFolder" android:label="Historique">
+ 			<intent-filter>
+				<action android:name="android.intent.action.CREATE_LIVE_FOLDER" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</activity> -->
+		
 		<activity android:name="SearchActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />

@@ -26,7 +26,7 @@ import android.provider.LiveFolders;
 
 // Thanks http://android-developers.blogspot.com/2009/04/live-folders.html !
 public class HistoryLiveFolder extends Activity {
-    public static final Uri CONTENT_URI = Uri.parse("content://org.alexis.littre.stardictprovider/history_livefolder");
+    public static final Uri CONTENT_URI = Uri.parse("content://org.alexis.littre.stardictprovider/history/livefolder");
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +48,7 @@ public class HistoryLiveFolder extends Activity {
     private static Intent createLiveFolder(Context context, Uri uri, String name, int icon) {
         final Intent intent = new Intent();
         intent.setData(uri);
-        intent.putExtra(LiveFolders.EXTRA_LIVE_FOLDER_BASE_INTENT, new Intent(Intent.ACTION_SEARCH, Uri.parse("content://org.alexis.littre.stardictprovider/"),
+        intent.putExtra(LiveFolders.EXTRA_LIVE_FOLDER_BASE_INTENT, new Intent(Intent.ACTION_VIEW, Uri.parse("content://org.alexis.littre.stardictprovider/"),
         		context.getApplicationContext(), SearchActivity.class));
         intent.putExtra(LiveFolders.EXTRA_LIVE_FOLDER_NAME, name);
         intent.putExtra(LiveFolders.EXTRA_LIVE_FOLDER_ICON,
