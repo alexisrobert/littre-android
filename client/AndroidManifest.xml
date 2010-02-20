@@ -10,8 +10,7 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />	
 			</intent-filter>
-		
-</activity>
+		</activity>
 		
 		<meta-data android:name="android.app.default_searchable" android:value=".SearchActivity" />
 		
@@ -47,7 +46,8 @@
 				<category android:name="android.intent.category.DEFAULT"></category>
 			</intent-filter>
 		</activity>
-	</application>
+	<activity android:name="AlphabetActivity"></activity>
+</application>
 
 	<uses-permission android:name="android.permission.INTERNET"></uses-permission>
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"></uses-permission>

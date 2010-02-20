@@ -17,115 +17,73 @@
 
 package org.alexis.littre;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import org.alexis.libstardict.Index;
-
-import android.app.ListActivity;
-import android.app.SearchManager;
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.util.Log;
 import android.view.View;
-import android.view.Window;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
+import android.widget.SimpleAdapter;
+import android.widget.AdapterView.OnItemClickListener;
 
-/* TODO: Re-program this class FROM SCRATCH to be AlphabetActivity 
- * 		 and dissociate Index initialisation from this activity,
- * 		 we don't need an index instance here, nor serialization */
-
-public class littre extends ListActivity {
-    Index idx;
-    Intent intent;
-    Vector<String> words;
-    
-    static final char A_ASCII_CODE = 65;
-    static final char Z_ASCII_CODE = 90;
-    
-    static final String INTENT_GET_HISTORY = "org.alexis.littre.GetHistory";
-    
+public class littre extends Activity {
+	static private final String[] MENUMAPPING_FROM = {"name","icon"};
+	static private final int[] MENUMAPPING_TO = {R.id.menuname,R.id.menuicon};
+	
+	static final String INTENT_GET_HISTORY = "org.alexis.littre.GetHistory";
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
-    	requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         super.onCreate(savedInstanceState);
         setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
         
-        setContentView(R.layout.list);
+        setContentView(R.layout.welcome); // We need to have our ListView instancied to fill it!
         
-        intent = getIntent();
+        List<Map<String,String>> menulist = new ArrayList<Map<String,String>>();
         
-        /* Restoring serialized state */
-        if (getLastNonConfigurationInstance() == null) {
-        	idx = new Index(this);
-        } else {
-        	// If we were rotating, we just need to refresh Index's context
-        	idx = (Index)getLastNonConfigurationInstance();
-        	idx.setContext(this);
-        }
-        	
-        idx.open();
-		
-		updateList();
+        // Arggg... put this in a resource XML file! Or make them at-least final !
+        addMenuItem("Alphabet", android.R.drawable.ic_menu_directions, menulist);
+        addMenuItem("Rechercher", android.R.drawable.ic_menu_search, menulist);
+        addMenuItem("Historique", android.R.drawable.ic_menu_recent_history, menulist);
+        
+        SimpleAdapter adapter = new SimpleAdapter(this, menulist, R.layout.welcomeitem, MENUMAPPING_FROM, MENUMAPPING_TO);
+        ((ListView)this.findViewById(R.id.welcomelist)).setAdapter(adapter);
+        ((ListView)this.findViewById(R.id.welcomelist)).setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View v, int position,
+					long id) {
+				switch ((int)id) {
+				case 0:
+					Intent i1 = new Intent(null,null,getApplicationContext(), AlphabetActivity.class);
+					startActivity(i1);
+					break;
+				case 1:
+					onSearchRequested();
+					break;
+				case 2:
+					Intent i2 = new Intent(INTENT_GET_HISTORY, null, getApplicationContext(), HistoryActivity.class);
+		        	startActivity(i2);
+		        	break;
+				}
+				Log.i("littre", String.valueOf(id));
+			}
+		});
     }
     
-    @Override
-    protected void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-        
-        Intent i = new Intent(Intent.ACTION_SEARCH, null, this.getApplicationContext(), GetLetterActivity.class);    
-        i.putExtra(SearchManager.QUERY, ((TextView)v.findViewById(R.id.word)).getText());
-        startActivity(i);
-    }
-    
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        MenuItem menuit_search = menu.add(0, Menu.FIRST, 0, "Rechercher");
-        menuit_search.setIcon(android.R.drawable.ic_menu_search);
-        
-        MenuItem menuit_hist = menu.add(0, Menu.FIRST+1, 1, "Historique");
-        menuit_hist.setIcon(android.R.drawable.ic_menu_recent_history);
-        
-        return true;
-    }
-    
-    @Override
-    public boolean onMenuItemSelected(int featureId, MenuItem item) {
-        switch(item.getItemId()) {
-        case Menu.FIRST:
-        	onSearchRequested();
-        	return true;
-        	
-        case Menu.FIRST+1:
-        	Intent i = new Intent(INTENT_GET_HISTORY, null, getApplicationContext(), HistoryActivity.class);
-        	startActivity(i);
-        	return true;
-        }
-        
-        return super.onMenuItemSelected(featureId, item);
-    }
-    
-    // Update the ArrayAdapter containing the words in the ListActivity
-    public void updateList() {
-    	words = new Vector<String>();
+    // I know, side-effects are dirty. But I don't see any macros in Java.
+    // OK, I aknowledge, i talk a little bit too much in the comments.
+    private void addMenuItem(String name, int icon, List<Map<String,String>> menulist) {
+    	Map<String, String> map = new HashMap<String, String>();
     	
-    	// If words list is empty, fill-in with the alphabet
-    	for (char i = A_ASCII_CODE; i <= Z_ASCII_CODE; i++) {
-    		words.add(String.valueOf(i));
-    	}
+    	map.put("name", name);
+    	map.put("icon", String.valueOf(icon));
     	
-    	ArrayAdapter<String> wordlist = new ArrayAdapter<String>(this, R.layout.wordlistitem, R.id.word, words);
-    	
-    	setListAdapter(wordlist);
-    }
-    
-    @Override
-    public Object onRetainNonConfigurationInstance() {
-    	idx.prepareConfigurationChange();
-    	
-    	return idx;
+    	menulist.add(map);
     }
 }
