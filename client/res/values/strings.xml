@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 <string name="app_name">Dictionnaire Littré</string>
-<string name="searchhint">Mot</string>
+<string name="searchhint">Mot à chercher ...</string>
 <string name="searchlabel">Recherche</string>
 <string name="indexurl">http://alexissoft.free.fr/littre/XMLittre.idx</string>
 <string name="wordcounturl">http://alexissoft.free.fr/littre/wordcount</string>

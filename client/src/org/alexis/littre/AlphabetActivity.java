@@ -53,7 +53,7 @@ public class AlphabetActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setDefaultKeyMode(DEFAULT_KEYS_SEARCH_LOCAL);
         
-        setTitle("Dictionnaire Littré - Alphabet");
+        setTitle("Dictionnaire Littré");
         setContentView(R.layout.list);
         
         intent = getIntent();
