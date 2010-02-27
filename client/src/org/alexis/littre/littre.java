@@ -38,6 +38,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -149,10 +150,17 @@ public class littre extends Activity {
 	private static class DownloadTask extends AsyncTask<Object, Object, Boolean> {
 		public Activity activity = null;
 		public ProgressDialog d = null;
+		private PowerManager.WakeLock wl;
 		
 		@Override
 		protected Boolean doInBackground(Object... arg0) {
 			Log.d("libstardict","Beginning downloading index ...");
+			
+			/* We request a wake lock. We don't want unfinished downloads
+			 * due to the phone going in suspend mode. */
+			PowerManager pm = (PowerManager) activity.getSystemService(Context.POWER_SERVICE);
+			wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "Littre index download");
+			wl.acquire();
 			
 			try {
 				URL url = new URL(activity.getString(R.string.indexurl));
@@ -186,6 +194,7 @@ public class littre extends Activity {
 		
 		protected void onPostExecute(Boolean result) {
 			d.dismiss();
+			wl.release(); // Release the wake lock.
 		}
 	}
 	
