@@ -33,10 +33,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-/* TODO: Re-program this class FROM SCRATCH to be AlphabetActivity 
- * 		 and dissociate Index initialisation from this activity,
- * 		 we don't need an index instance here, nor serialization */
-
 public class AlphabetActivity extends ListActivity {
     Index idx;
     Intent intent;
