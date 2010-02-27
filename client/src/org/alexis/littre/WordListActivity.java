@@ -165,10 +165,7 @@ public class WordListActivity extends ListActivity {
         } else {
         	// If we were rotating, we just need to refresh Index's context
         	idx = (Index)getLastNonConfigurationInstance();
-        	idx.setContext(this);
         }
-        
-        idx.open();
 		
 		// 2. Word list
 		if (savedInstanceState != null) {
