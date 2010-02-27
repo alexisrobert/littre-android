@@ -4,6 +4,7 @@
 <string name="searchhint">Mot à chercher ...</string>
 <string name="searchlabel">Recherche</string>
 <string name="indexurl">http://alexissoft.free.fr/littre/XMLittre.idx</string>
+<string name="md5url">http://alexissoft.free.fr/littre/XMLittre.md5</string>
 <string name="wordcounturl">http://alexissoft.free.fr/littre/wordcount</string>
 <string name="definitionurl">http://alexissoft.free.fr/littre/definition.php?offset=%d&amp;size=%d</string>
 <string name="no_result_message">Aucun résultat, appuyez sur "Retour" pour revenir.</string>
@@ -16,4 +17,6 @@
 <string name="loadingdef_message">Veuillez patienter ...</string>
 <string name="results_title">%s - %d résultats</string>
 <string name="searching_description">Définitions du dictionnaire Littré</string>
+<string name="downloading_message">Veuillez patienter, téléchargement de l'index ...</string>
+<string name="md5check_message">Vérification du téléchargement ...</string>
 </resources>

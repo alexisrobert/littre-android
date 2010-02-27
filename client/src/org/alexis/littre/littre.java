@@ -19,10 +19,14 @@ package org.alexis.littre;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.math.BigInteger;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +38,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
@@ -124,7 +129,7 @@ public class littre extends Activity {
 		
 		ProgressDialog d = new ProgressDialog(this);
 		d.setTitle("Téléchargement de l'index");
-		d.setMessage("Veuillez patienter, téléchargement de l'index ...");
+		d.setMessage(getString(R.string.downloading_message));
 		d.setIndeterminate(false);
 		
 		d.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
@@ -147,13 +152,15 @@ public class littre extends Activity {
 	}
     
 	// Download thread
-	private static class DownloadTask extends AsyncTask<Object, Object, Boolean> {
+	private static class DownloadTask extends AsyncTask<Object, Integer, Boolean> {
 		public Activity activity = null;
 		public ProgressDialog d = null;
 		private PowerManager.WakeLock wl;
 		
 		@Override
 		protected Boolean doInBackground(Object... arg0) {
+			boolean downloadok = false;
+			
 			Log.d("libstardict","Beginning downloading index ...");
 			
 			/* We request a wake lock. We don't want unfinished downloads
@@ -175,26 +182,108 @@ public class littre extends Activity {
 				
 				while ((readBytes = fis.read(bytes)) > 0) {
 					progress += readBytes;
-					d.setProgress((int)(((float)progress/http.getContentLength())*100));
+					publishProgress((int)(((float)progress/http.getContentLength())*100));
 					fos.write(bytes, 0, readBytes);
 				}
 				
 				fis.close();
 				fos.close();
+				
+				/** Checking MD5 **/
+				Log.i("littre", "Checking MD5 ...");
+				publishProgress(-1); // -1 means MD5 computing. Yes. That's a hack.
+				
+				String origmd5 = downloadMD5();
+				String ourmd5 = computeMD5();
+				
+				if (origmd5.equals(ourmd5) == true) {
+					Log.i("littre", String.format("MD5 check ok : %s (remote) == %s (local)",origmd5,ourmd5));
+					downloadok = true;
+				} else {
+					Log.i("littre", String.format("MD5 check error : %s (remote) != %s (local)", origmd5, ourmd5));
+				}
 			} catch (IOException e){
 				e.printStackTrace();
 			}
 			
-			new File(activity.getFilesDir(),"XMLittre.idx.tmp").renameTo(new File(activity.getFilesDir(),"XMLittre.idx"));
+			if (downloadok == true) {
+				new File(activity.getFilesDir(),"XMLittre.idx.tmp").renameTo(new File(activity.getFilesDir(),"XMLittre.idx"));
 			
-			Log.d("libstardict", "Download finished!");
+				Log.d("libstardict", "Download finished!");
+			} else {
+				
+				new File(activity.getFilesDir(),"XMLittre.idx.tmp").delete();
+				Log.d("libstardict", "Error while downloading !");
+			}
 			
-			return true;
+			return downloadok;
+		}
+		
+		public String downloadMD5() throws IOException {
+			URL url = new URL(activity.getString(R.string.md5url));
+			HttpURLConnection http = (HttpURLConnection) url.openConnection();
+			http.connect();
+			
+			BufferedInputStream fis = new BufferedInputStream(http.getInputStream());
+			
+			byte[] md5 = new byte[32];
+			fis.read(md5);
+			
+			return new String(md5);
+		}
+		
+		public String computeMD5() throws IOException {
+			String output = "";
+			
+			try {
+				MessageDigest digest = MessageDigest.getInstance("MD5");
+				FileInputStream is = new FileInputStream(new File(activity.getFilesDir(),"XMLittre.idx.tmp"));
+				
+				byte[] bytes = new byte[20480];
+				int readBytes = 0;
+				
+				while ((readBytes = is.read(bytes)) > 0) {
+					digest.update(bytes, 0, readBytes);
+				}
+				
+				BigInteger bigInt = new BigInteger(1, digest.digest());
+				output = bigInt.toString(16);
+			} catch (NoSuchAlgorithmException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			return output;
+		}
+		
+		protected void onProgressUpdate(Integer... progress) {
+			if (progress[0] != -1) {
+				d.setProgress(progress[0]);
+			} else {
+				d.setMessage(activity.getString(R.string.md5check_message));
+				d.setIndeterminate(true);
+			}
 		}
 		
 		protected void onPostExecute(Boolean result) {
 			d.dismiss();
 			wl.release(); // Release the wake lock.
+			
+			if (result == false) {
+				AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+				builder.setTitle("Téléchargement de l'index")
+					.setMessage("Erreur lors du téléchargement, veuillez réessayer plus tard.")
+					.setNeutralButton("Fermer", new DialogInterface.OnClickListener() {
+					
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						activity.finish();
+					}
+				});
+				
+				AlertDialog alert = builder.create();
+				alert.show();
+			}
 		}
 	}
 	
