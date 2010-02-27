@@ -17,13 +17,26 @@
 
 package org.alexis.littre;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.alexis.libstardict.IndexDB;
+
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -37,6 +50,8 @@ public class littre extends Activity {
 	static private final int[] MENUMAPPING_TO = {R.id.menuname,R.id.menuicon};
 	
 	static final String INTENT_GET_HISTORY = "org.alexis.littre.GetHistory";
+	
+	private DownloadTask downtask = null;
 	
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -74,6 +89,9 @@ public class littre extends Activity {
 				Log.i("littre", String.valueOf(id));
 			}
 		});
+        
+        if (IndexDB.needsFilling(this) == true)
+        	this.downloadIndex();
     }
     
     // I know, side-effects are dirty. But I don't see any macros in Java.
@@ -85,5 +103,94 @@ public class littre extends Activity {
     	map.put("icon", String.valueOf(icon));
     	
     	menulist.add(map);
+    }
+    
+    /** INDEX DOWNLOADING PART **/
+    
+    private void downloadIndex() {
+	    ConnectivityManager c = (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+	    
+		if (c.getActiveNetworkInfo() == null || c.getActiveNetworkInfo().isAvailable() == false) {
+			AlertDialog.Builder alert = new AlertDialog.Builder(this);
+			alert.setTitle(getString(R.string.no_network_title));
+			alert.setMessage(getString(R.string.no_network_idx_message));
+			alert.show();
+			return;
+		}
+		
+		c = null; /* Trash the object, telling the GC to free memory at the next run.
+				   * This function is running for a long time and we want to consume the less memory possible. */
+		
+		ProgressDialog d = new ProgressDialog(this);
+		d.setTitle("Téléchargement de l'index");
+		d.setMessage("Veuillez patienter, téléchargement de l'index ...");
+		d.setIndeterminate(false);
+		
+		d.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+			
+		d.setCancelable(false);
+		d.show();
+		
+		downtask = (DownloadTask)getLastNonConfigurationInstance();
+		if (downtask == null) {
+			Log.i("libstardict", "First run, will download index ...");
+			downtask = new DownloadTask();
+		}
+		
+		downtask.activity = this;
+		downtask.d = d;
+		
+		if(downtask.getStatus() == AsyncTask.Status.PENDING) {
+			downtask.execute();
+		}
+	}
+    
+	// Download thread
+	private static class DownloadTask extends AsyncTask<Object, Object, Boolean> {
+		public Activity activity = null;
+		public ProgressDialog d = null;
+		
+		@Override
+		protected Boolean doInBackground(Object... arg0) {
+			Log.d("libstardict","Beginning downloading index ...");
+			
+			try {
+				URL url = new URL(activity.getString(R.string.indexurl));
+				HttpURLConnection http = (HttpURLConnection) url.openConnection();
+				http.connect();
+				BufferedInputStream fis = new BufferedInputStream(http.getInputStream());
+				FileOutputStream fos = new FileOutputStream(new File(activity.getFilesDir(),"XMLittre.idx.tmp"));
+				
+				byte[] bytes = new byte[20480];
+				int progress = 0;
+				int readBytes = 0;
+				
+				while ((readBytes = fis.read(bytes)) > 0) {
+					progress += readBytes;
+					d.setProgress((int)(((float)progress/http.getContentLength())*100));
+					fos.write(bytes, 0, readBytes);
+				}
+				
+				fis.close();
+				fos.close();
+			} catch (IOException e){
+				e.printStackTrace();
+			}
+			
+			new File(activity.getFilesDir(),"XMLittre.idx.tmp").renameTo(new File(activity.getFilesDir(),"XMLittre.idx"));
+			
+			Log.d("libstardict", "Download finished!");
+			
+			return true;
+		}
+		
+		protected void onPostExecute(Boolean result) {
+			d.dismiss();
+		}
+	}
+	
+    @Override
+    public Object onRetainNonConfigurationInstance() {
+        return downtask;
     }
 }

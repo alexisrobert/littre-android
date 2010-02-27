@@ -55,19 +55,6 @@ public class AlphabetActivity extends ListActivity {
         
         setTitle("Dictionnaire Littré");
         setContentView(R.layout.list);
-        
-        intent = getIntent();
-        
-        /* Restoring serialized state */
-        if (getLastNonConfigurationInstance() == null) {
-        	idx = new Index(this);
-        } else {
-        	// If we were rotating, we just need to refresh Index's context
-        	idx = (Index)getLastNonConfigurationInstance();
-        	idx.setContext(this);
-        }
-        	
-        idx.open();
 		
 		updateList();
     }
@@ -121,12 +108,5 @@ public class AlphabetActivity extends ListActivity {
     	ArrayAdapter<String> wordlist = new ArrayAdapter<String>(this, R.layout.wordlistitem, R.id.word, words);
     	
     	setListAdapter(wordlist);
-    }
-    
-    @Override
-    public Object onRetainNonConfigurationInstance() {
-    	idx.prepareConfigurationChange();
-    	
-    	return idx;
     }
 }

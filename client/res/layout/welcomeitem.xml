@@ -3,7 +3,7 @@
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent" android:orientation="horizontal" android:padding="1pt">
-<ImageView android:id="@+id/menuicon" android:src="@drawable/icon" android:layout_width="wrap_content" android:layout_height="fill_parent"></ImageView>
-<TextView android:text="Blah." android:id="@+id/menuname" android:layout_width="fill_parent" android:layout_height="fill_parent" android:padding="2pt" android:textSize="11pt"></TextView>
+<ImageView android:id="@+id/menuicon" android:src="@drawable/icon" android:layout_width="wrap_content" android:layout_height="fill_parent"></ImageView><TextView android:text="Foo" android:paddingRight="1pt" android:paddingLeft="1pt" android:layout_width="fill_parent" android:layout_height="fill_parent" android:id="@+id/menuname" android:textSize="10pt" android:paddingTop="3pt" android:paddingBottom="3pt"/>
+
 
 </LinearLayout>

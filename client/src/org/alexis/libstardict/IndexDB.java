@@ -37,8 +37,8 @@ public class IndexDB extends SQLiteOpenHelper {
 		return indexDir;
 	}
 	
-	public boolean needsFilling() {
-		return !(new File(this.indexDir(),"XMLittre.idx").isFile());
+	public static boolean needsFilling(Context ctx) {
+		return !(new File(ctx.getFilesDir(),"XMLittre.idx").isFile());
 	}
 	
 	@Override

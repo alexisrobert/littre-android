@@ -3,6 +3,6 @@
 <LinearLayout android:id="@+id/LinearLayout01" android:layout_width="fill_parent" android:layout_height="fill_parent" xmlns:android="http://schemas.android.com/apk/res/android" android:orientation="vertical" android:padding="2pt">
 	<TextView android:id="@+id/TextView01" android:text="Dictionnaire Littré" android:layout_height="wrap_content" android:layout_width="fill_parent" android:gravity="center" android:textSize="19pt"></TextView>
 
-<ListView android:id="@+id/welcomelist" android:layout_width="fill_parent" android:layout_height="fill_parent" android:paddingTop="5pt"></ListView>
+<ListView android:id="@+id/welcomelist" android:layout_width="fill_parent" android:layout_height="fill_parent" android:paddingTop="10pt"></ListView>
 
 </LinearLayout>
