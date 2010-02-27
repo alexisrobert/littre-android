@@ -26,7 +26,6 @@ public class HistoryActivity extends WordListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 	    setTitle("Dictionnaire Littré - Historique");
-	    setShowHistory(false);
 	    
 	    // We only search if we have no backup.
 	    if (savedInstanceState == null) {

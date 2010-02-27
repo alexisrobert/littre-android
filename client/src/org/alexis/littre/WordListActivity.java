@@ -49,7 +49,6 @@ public class WordListActivity extends ListActivity {
     protected Index idx;
     private List<String> words;
     private GetDefinitionTask task;
-    private boolean mShowHistory = true;
     protected boolean mTextFiltering = true;
     
     private class MyAdapter extends ArrayAdapter<String> implements SectionIndexer {
@@ -216,24 +215,11 @@ public class WordListActivity extends ListActivity {
     	getListView().setTextFilterEnabled(state);
     }
     
-    public boolean isShowingHistory() {
-    	return mShowHistory;
-    }
-    
-    public void setShowHistory(boolean state) {
-    	this.mShowHistory = state;
-    }
-    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
     	MenuItem menuit_search = menu.add(0, Menu.FIRST, 0, "Rechercher");
     	menuit_search.setIcon(android.R.drawable.ic_menu_search);
-    	
-        if (mShowHistory == true) {        	
-        	MenuItem menuit_hist = menu.add(0, Menu.FIRST+1, 1, "Historique");
-        	menuit_hist.setIcon(android.R.drawable.ic_menu_recent_history);
-        }
         
         return true;
     }
