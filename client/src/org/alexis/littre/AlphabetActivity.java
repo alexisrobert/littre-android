@@ -70,9 +70,6 @@ public class AlphabetActivity extends ListActivity {
         MenuItem menuit_search = menu.add(0, Menu.FIRST, 0, "Rechercher");
         menuit_search.setIcon(android.R.drawable.ic_menu_search);
         
-        MenuItem menuit_hist = menu.add(0, Menu.FIRST+1, 1, "Historique");
-        menuit_hist.setIcon(android.R.drawable.ic_menu_recent_history);
-        
         return true;
     }
     
