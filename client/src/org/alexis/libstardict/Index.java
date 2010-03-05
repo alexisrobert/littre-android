@@ -24,6 +24,7 @@ import java.util.Vector;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 public class Index {
 	private IndexDB indexdb;
@@ -71,6 +72,7 @@ public class Index {
 	}
 	
 	public native Word getWord(String name);
+	public native Word getWordFromId(int id);
 	
 	private Vector<String> wordsQuery(String sql, String[] params) {
 		Vector<String> data = new Vector<String>();

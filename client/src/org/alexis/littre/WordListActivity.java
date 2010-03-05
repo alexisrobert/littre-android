@@ -133,7 +133,7 @@ public class WordListActivity extends ListActivity {
 			
 			return true;
 		}
-    	
+		
 		protected void onPostExecute(Boolean result) {
 			d.dismiss();
 			setProgressBarIndeterminateVisibility(false);
