@@ -25,6 +25,7 @@
 #include "org_alexis_libstardict_Index.h"
 
 struct Word {
+	int id;
 	char* name;
 	long offset;
 	long size;
@@ -53,6 +54,7 @@ int callback_getword(struct Word word, struct Word **work, int *size, char* para
 		(*work)[0].name = strdup(word.name);
 		(*work)[0].offset = word.offset;
 		(*work)[0].size = word.size;
+		(*work)[0].id = word.id;
 
 		return 1;
 	}
@@ -68,6 +70,7 @@ int callback_match(struct Word word, struct Word **work, int *size, char* param)
 		else
 			(*work) = realloc(*work, (*size)*(sizeof(struct Word)));
 
+		(*work)[(*size)-1].id = word.id;
 		(*work)[(*size)-1].name = strdup(word.name);
 		(*work)[(*size)-1].offset = word.offset;
 		(*work)[(*size)-1].size = word.size;
@@ -84,6 +87,7 @@ int callback_getletter(struct Word word, struct Word **work, int *size, char* pa
 		else
 			(*work) = realloc(*work, (*size)*(sizeof(struct Word)));
 
+		(*work)[(*size)-1].id = word.id;
 		(*work)[(*size)-1].name = strdup(word.name);
 		(*work)[(*size)-1].offset = word.offset;
 		(*work)[(*size)-1].size = word.size;
@@ -98,6 +102,8 @@ struct Wordlist parse(char *filename, int (*callbackptr)(struct Word, struct Wor
 	int buf_size = 8;
 	char *buf = malloc(buf_size);
 	int idx = 0;
+
+	int wordid = 0;
 
 	struct Word *work;
 	int work_size = 0;
@@ -125,6 +131,8 @@ struct Wordlist parse(char *filename, int (*callbackptr)(struct Word, struct Wor
 		idx++;
 
 		if (c == '\0') {
+			word.id = wordid;
+
 			word.name = buf;
 
 			fread(num_buf, 4, 1, f); // read the offset (4 bytes = 32 bits)
@@ -141,6 +149,8 @@ struct Wordlist parse(char *filename, int (*callbackptr)(struct Word, struct Wor
 
 			idx=0;
 			memset(buf, '\0', buf_size);
+
+			wordid++;
 		}
 
 	}
@@ -210,6 +220,7 @@ JNIEXPORT jobject JNICALL Java_org_alexis_libstardict_Index_getWord (JNIEnv *env
 		return NULL;
 
 	word = (*env)->NewObject(env, WordClass, (*env)->GetMethodID(env, WordClass, "<init>", "()V"));
+	(*env)->SetIntField(env, word, (*env)->GetFieldID(env, WordClass, "id", "I"), words.words[0].id);
 	(*env)->SetObjectField(env, word, (*env)->GetFieldID(env, WordClass, "name", "Ljava/lang/String;"),
 			(*env)->NewStringUTF(env, words.words[0].name));
 	(*env)->SetLongField(env, word, (*env)->GetFieldID(env, WordClass, "offset", "J"), words.words[0].offset);
