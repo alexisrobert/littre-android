@@ -80,14 +80,14 @@ public class littre extends Activity {
 			public void onItemClick(AdapterView<?> arg0, View v, int position,
 					long id) {
 				switch ((int)id) {
-				case 0:
+				case 0: // Alphabet
 					Intent i1 = new Intent(null,null,getApplicationContext(), AlphabetActivity.class);
 					startActivity(i1);
 					break;
-				case 1:
+				case 1: // Search
 					onSearchRequested();
 					break;
-				case 2:
+				case 2: // History
 					Intent i2 = new Intent(INTENT_GET_HISTORY, null, getApplicationContext(), HistoryActivity.class);
 		        	startActivity(i2);
 		        	break;

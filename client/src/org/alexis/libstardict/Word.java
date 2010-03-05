@@ -22,21 +22,24 @@ import java.io.Serializable;
 public class Word implements Serializable {
 	private static final long serialVersionUID = 4473046261681389738L;
 	
-	public String name; // It's public to be more easily read/written from JNI.
+	public int id; // It's public to be more easily read/written from JNI.
+	public String name;
 	public long offset;
 	public int size;
 	
 	public Word() {}
 	
+	public int getId() { return this.id; }
 	public String getName() { return this.name; }
 	public long getOffset() { return this.offset; }
 	public int getSize() { return this.size; }
 	
+	public void setId(int id) { this.id = id; }
 	public void setName(String name) { this.name = name; }
 	public void setOffset(long offset) { this.offset = offset; }
 	public void setSize(int size) { this.size = size; }
 	
 	public String toString() {
-		return String.format("<Word: \"%s\" (offset=0x%h/size=0x%h)>",name,offset,size);
+		return String.format("<Word: \"%s\" (id=%d/offset=0x%h/size=0x%h)>",name,id,offset,size);
 	}
 }
