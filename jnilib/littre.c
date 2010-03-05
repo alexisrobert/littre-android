@@ -61,6 +61,24 @@ int callback_getword(struct Word word, struct Word **work, int *size, char* para
 	return 0;
 }
 
+int callback_getwordfromid(struct Word word, struct Word **work, int *size, char* param) {
+	int id = atoi(param); // This is a hack. Haha.
+
+	if (id == word.id) {
+		(*work) = malloc(sizeof(struct Word));
+		(*size) = 1;
+
+		(*work)[0].name = strdup(word.name);
+		(*work)[0].offset = word.offset;
+		(*work)[0].size = word.size;
+		(*work)[0].id = word.id;
+
+		return 1;
+	}
+
+	return 0;
+}
+
 int callback_match(struct Word word, struct Word **work, int *size, char* param) {
 	if (strcasestr(word.name, param) != 0) { /* in-text matching */
 		(*size)++;
@@ -215,6 +233,39 @@ JNIEXPORT jobject JNICALL Java_org_alexis_libstardict_Index_getWord (JNIEnv *env
 	char* query = (char*)(*env)->GetStringUTFChars(env, wordname, NULL);
 	__android_log_write(ANDROID_LOG_DEBUG,"libstardict-native","JNI call for getting word received!\n");
 	struct Wordlist words = parse(filename, &callback_getword, query);
+
+	if (words.number == 0)
+		return NULL;
+
+	word = (*env)->NewObject(env, WordClass, (*env)->GetMethodID(env, WordClass, "<init>", "()V"));
+	(*env)->SetIntField(env, word, (*env)->GetFieldID(env, WordClass, "id", "I"), words.words[0].id);
+	(*env)->SetObjectField(env, word, (*env)->GetFieldID(env, WordClass, "name", "Ljava/lang/String;"),
+			(*env)->NewStringUTF(env, words.words[0].name));
+	(*env)->SetLongField(env, word, (*env)->GetFieldID(env, WordClass, "offset", "J"), words.words[0].offset);
+	(*env)->SetIntField(env, word, (*env)->GetFieldID(env, WordClass, "size", "I"), words.words[0].size);
+
+	return word;
+}
+
+// The next method is a nearly copy-paste of getWord
+JNIEXPORT jobject JNICALL Java_org_alexis_libstardict_Index_getWordFromId (JNIEnv *env, jobject parent, jint wordid) {
+	jobject word = NULL;
+	static jclass WordClass = NULL;
+	WordClass = (*env)->FindClass(env, "org/alexis/libstardict/Word");
+
+        // Getting filename
+        char* filename = (char*)(*env)->GetStringUTFChars(env,
+                                (*env)->GetObjectField(env, parent,
+                                        (*env)->GetFieldID(env, (*env)->FindClass(env, "org/alexis/libstardict/Index"),
+                                               "indexpath", "Ljava/lang/String;")), NULL);
+
+	// These are the only differences, these four next lines !
+	char *query;
+	query = malloc(sizeof(char)*33);
+	memset(query, '\0', sizeof(char)*33);
+	sprintf(query, "%d", (int)wordid);
+	__android_log_write(ANDROID_LOG_DEBUG,"libstardict-native","JNI call for getting word from ID received!\n");
+	struct Wordlist words = parse(filename, &callback_getwordfromid, query);
 
 	if (words.number == 0)
 		return NULL;

@@ -31,6 +31,14 @@ JNIEXPORT jobjectArray JNICALL Java_org_alexis_libstardict_Index_getRawLetter
 JNIEXPORT jobject JNICALL Java_org_alexis_libstardict_Index_getWord
   (JNIEnv *, jobject, jstring);
 
+/*
+ * Class:     org_alexis_libstardict_Index
+ * Method:    getWordFromId
+ * Signature: (I)Lorg/alexis/libstardict/Word;
+ */
+JNIEXPORT jobject JNICALL Java_org_alexis_libstardict_Index_getWordFromId
+  (JNIEnv *, jobject, jint);
+
 #ifdef __cplusplus
 }
 #endif
