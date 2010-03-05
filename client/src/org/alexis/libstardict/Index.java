@@ -93,15 +93,15 @@ public class Index {
 		return this.indexdb;
 	}
 	
-	public void storeHistory(String word) {
+	public void storeHistory(Word word) {
 		SQLiteDatabase db = indexdb.getWritableDatabase();
 		Date date = new Date();
 		
 		/* Nothing else is needed !
 		 * Old history wiping is completely managed by SQLite's 
 		 */
-		db.execSQL("INSERT INTO history (word, timestamp) VALUES (?,?)", 
-				new String[] {word, String.valueOf(date.getTime())});
+		db.execSQL("INSERT INTO history (wordid, word, timestamp) VALUES (?,?,?)", 
+				new String[] {String.valueOf(word.id), word.name, String.valueOf(date.getTime())});
 		
 		db.close();
 	}

@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.alexis.libstardict.Index;
+import org.alexis.libstardict.Word;
 
 import android.app.AlertDialog;
 import android.app.ListActivity;
@@ -106,7 +107,8 @@ public class WordListActivity extends ListActivity {
     private class GetDefinitionTask extends AsyncTask<Object, Object, Boolean> {
     	Intent i;
     	ProgressDialog d;
-    	String word;
+    	String word_name;
+    	Word word = null;
     	boolean finish;
     	
 		@Override
@@ -120,12 +122,14 @@ public class WordListActivity extends ListActivity {
 			}
 			
 			Index idx = (Index)params[1];
-			word = (String)params[0];
+			word_name = (String)params[0];
 			d = (ProgressDialog)params[2];
 			finish = (Boolean)params[3];
 			
+			word = idx.getWord(word_name);
+			
 			i = new Intent(INTENT_DEFINITION, null, getApplicationContext(), Definition.class);
-			i.putExtra("word", idx.getWord(word));
+			i.putExtra("word", word);
 			
 			return true;
 		}
@@ -139,7 +143,7 @@ public class WordListActivity extends ListActivity {
 				 * when it is currently showed. In fact, the above thread
 				 * CAN be interrupted, in case of device's rotation for instance,
 				 * so : be careful to siding effects! */
-				idx.storeHistory(word);
+				if (word != null) idx.storeHistory(word);
 				
 				startActivity(i);
 			}

@@ -29,7 +29,7 @@ public class IndexDB extends SQLiteOpenHelper {
 	private File indexDir = null;
 	
 	public IndexDB(Context context) {
-		super(context, "index.db", null, 3);
+		super(context, "index.db", null, 4);
 		indexDir = context.getFilesDir();
 	}
 	
@@ -43,7 +43,7 @@ public class IndexDB extends SQLiteOpenHelper {
 	
 	@Override
 	public void onCreate(SQLiteDatabase db) {
-		db.execSQL("CREATE TABLE history (word STRING, timestamp INTEGER);");
+		db.execSQL("CREATE TABLE history (wordid INTEGER, word STRING, timestamp INTEGER);");
 		
 		// I love views and triggers -- SQL<3 :)
 		db.execSQL("CREATE VIEW recent_history AS SELECT * FROM history ORDER BY timestamp DESC LIMIT "+HISTORY_DEPTH+";");
@@ -61,6 +61,13 @@ public class IndexDB extends SQLiteOpenHelper {
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		Log.i("littre", "Upgrading database ...");
 		db.execSQL("DROP TABLE IF EXISTS words");
+		
+		if (oldVersion < 4) {
+			Log.i("littre", " - History use wordids");
+			db.execSQL("DROP TABLE history");
+			db.execSQL("DROP VIEW recent_history");
+			onCreate(db);
+		}
 	}
 	
 	public void dropDatabase(SQLiteDatabase db) {
