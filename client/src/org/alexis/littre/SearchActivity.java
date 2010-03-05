@@ -44,14 +44,19 @@ public class SearchActivity extends WordListActivity {
     	}
     	
     	// We only accept valid search intents
-    	if (getIntent().getStringExtra(SearchManager.QUERY) == null ||
-    			(getIntent().getAction().equals(Intent.ACTION_VIEW) == true && getIntent().getDataString() == null))
+    	if (getIntent().getStringExtra(SearchManager.QUERY) == null || getIntent().getAction().equals(Intent.ACTION_VIEW) == false)
     		Log.d("littre", String.format("SearchActivity received an invalid intent : %s", getIntent().toURI()));
     	
         setProgressBarIndeterminateVisibility(true);
         
         if (getIntent().getAction().equals(Intent.ACTION_VIEW) == true) {
-        	fireShowIntent(getIntent().getDataString(), true);
+        	if (getIntent().getData().getLastPathSegment().matches("\\d+")) {
+        		// ID search
+        		fireShowIntent(Integer.valueOf(getIntent().getData().getLastPathSegment()), true);
+        	} else {
+        		// Word search
+        		fireShowIntent(getIntent().getDataString(), true);
+        	}
         	return;
         }
         

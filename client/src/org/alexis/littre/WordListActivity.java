@@ -107,14 +107,13 @@ public class WordListActivity extends ListActivity {
     private class GetDefinitionTask extends AsyncTask<Object, Object, Boolean> {
     	Intent i;
     	ProgressDialog d;
-    	String word_name;
     	Word word = null;
     	boolean finish;
     	
 		@Override
 		protected Boolean doInBackground(Object... params) {
 			// Parameter checking
-			if (!(params.length >= 4) || !(params[0] instanceof String)
+			if (!(params.length >= 4) || (!(params[0] instanceof String) && !(params[0] instanceof Integer))
 					|| !(params[1] instanceof Index)
 					|| !(params[2] instanceof ProgressDialog)
 					|| !(params[3] instanceof Boolean)) {
@@ -122,11 +121,14 @@ public class WordListActivity extends ListActivity {
 			}
 			
 			Index idx = (Index)params[1];
-			word_name = (String)params[0];
 			d = (ProgressDialog)params[2];
 			finish = (Boolean)params[3];
 			
-			word = idx.getWord(word_name);
+			if (params[0] instanceof String) {
+				word = idx.getWord((String)params[0]);
+			} else {
+				word = idx.getWordFromId((Integer)params[0]);
+			}
 			
 			i = new Intent(INTENT_DEFINITION, null, getApplicationContext(), Definition.class);
 			i.putExtra("word", word);
@@ -263,8 +265,10 @@ public class WordListActivity extends ListActivity {
     }
     
     protected void fireShowIntent(String word) { fireShowIntent(word, false); }
+    protected void fireShowIntent(int wordid) { fireShowIntent(new Integer(wordid), false); }
+    protected void fireShowIntent(int wordid, boolean finish) { fireShowIntent(new Integer(wordid), finish); }
     
-    protected void fireShowIntent(String word, boolean finish) {
+    protected void fireShowIntent(Object word, boolean finish) {
     	ConnectivityManager c = (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
     	
 		if (c.getActiveNetworkInfo() == null || c.getActiveNetworkInfo().isAvailable() == false) {

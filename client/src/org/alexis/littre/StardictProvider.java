@@ -63,7 +63,6 @@ public class StardictProvider extends ContentProvider {
         SearchManager.SUGGEST_COLUMN_INTENT_DATA,
         };
 	
-	
 	// Unused in this class, for global lisibility
 	public static final Uri WORDS_URI = 
         Uri.parse("content://org.alexis.littre.stardictprovider/words");
@@ -84,7 +83,7 @@ public class StardictProvider extends ContentProvider {
 		URI_MATCHER.addURI(AUTHORITY, SearchManager.SUGGEST_URI_PATH_QUERY+"/*", SEARCH_SUGGEST);
 		
 	    LIVE_FOLDER_PROJECTION_MAP = new HashMap<String,String>();
-	    LIVE_FOLDER_PROJECTION_MAP.put(LiveFolders._ID, "word" +
+	    LIVE_FOLDER_PROJECTION_MAP.put(LiveFolders._ID, "wordid" +
 	            " AS " + LiveFolders._ID);
 	    LIVE_FOLDER_PROJECTION_MAP.put(LiveFolders.NAME, "word" +
 	            " AS " + LiveFolders.NAME);
