@@ -24,6 +24,8 @@
 #include <android/log.h>
 #include "org_alexis_libstardict_Index.h"
 
+#define LOG_BASE10_2 0.30102999566398114
+
 struct Word {
 	int id;
 	char* name;
@@ -42,6 +44,10 @@ long getnum(unsigned char* buf) {
 	data = (data << 8) + buf[2];
 	data = (data << 8) + buf[3];
 	return data;
+}
+
+int intlength() {
+	return ceil((powf(sizeof(int),2)-1)*LOG_BASE10_2); // ceil((2^n-1)*log_10(2))
 }
 
 int callback_getword(struct Word word, struct Word **work, int *size, char* param) {
@@ -261,8 +267,8 @@ JNIEXPORT jobject JNICALL Java_org_alexis_libstardict_Index_getWordFromId (JNIEn
 
 	// These are the only differences, these four next lines !
 	char *query;
-	query = malloc(sizeof(char)*33);
-	memset(query, '\0', sizeof(char)*33);
+	query = malloc(sizeof(char)*intlength());
+	memset(query, '\0', sizeof(char)*intlength());
 	sprintf(query, "%d", (int)wordid);
 	__android_log_write(ANDROID_LOG_DEBUG,"libstardict-native","JNI call for getting word from ID received!\n");
 	struct Wordlist words = parse(filename, &callback_getwordfromid, query);
