@@ -233,6 +233,7 @@ public class WordListActivity extends ListActivity {
     @Override
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         switch(item.getItemId()) {
+        // Warning !! Menu.FIRST+1xy is used by history for context menu purposes. Don't overlap!!
         case Menu.FIRST:
         	onSearchRequested();
         	return true;

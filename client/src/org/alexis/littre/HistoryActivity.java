@@ -18,14 +18,23 @@
 package org.alexis.littre;
 import java.util.Vector;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.ContextMenu;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 
 public class HistoryActivity extends WordListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 	    setTitle("Dictionnaire Littré - Historique");
+	    
+	    registerForContextMenu(this.getListView());
 	    
 	    // We only search if we have no backup.
 	    if (savedInstanceState == null) {
@@ -36,8 +45,36 @@ public class HistoryActivity extends WordListActivity {
 				words.add(c.getString(0));
 				c.moveToNext();
 			}
-	    	
+			
 			setWords(words);
 	    }
+	}
+	
+	@Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+    	super.onCreateContextMenu(menu, v, menuInfo);
+    	
+    	menu.setHeaderTitle("Historique");
+    	menu.add(0, Menu.FIRST+100, 0, "Supprimer");
+    }
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		if (item.getItemId() == Menu.FIRST+100) {
+			AdapterContextMenuInfo info = (AdapterContextMenuInfo)item.getMenuInfo();
+			String word = (String)getListView().getItemAtPosition(info.position);
+			
+			Log.i("littre", String.format("Deleting %s from history...", word));
+			
+			getContentResolver().delete(StardictProvider.HISTORY_URI, "word = ?", new String[] {word});
+			
+			// We have deleted an item : we restart the HistoryActivity to propagate changes
+        	Intent i = new Intent(INTENT_GET_HISTORY, null, getApplicationContext(), HistoryActivity.class);
+        	startActivity(i);
+        	finish();
+        	
+			return true;
+		}
+		return false;
 	}
 }

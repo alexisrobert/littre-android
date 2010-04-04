@@ -95,8 +95,21 @@ public class StardictProvider extends ContentProvider {
 	
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
-		Log.e("libstardict", "You can't delete words !");
-		return 0;
+		int match = URI_MATCHER.match(uri);
+		
+		switch(match) {
+		case HISTORY:
+			SQLiteDatabase db = idx.getIndexDB().getWritableDatabase();
+			if (selection.equals("word = ?") == true && selectionArgs.length >= 1) {
+				return db.delete("history", "word = ?", new String[] {selectionArgs[0]});
+			} else {
+				Log.e("libstardict", "Invalid query!");
+				return 0;
+			}
+		default:
+			Log.e("libstardict", "You can't use delete on this uri !");
+			return 0;		
+		}
 	}
 	
 	@Override
@@ -139,7 +152,7 @@ public class StardictProvider extends ContentProvider {
 		case SEARCH_SUGGEST:
 			MatrixCursor cursor = new MatrixCursor(SEARCH_COLUMNS);
 			
-			// We're avoiding flooding CPU with too long querys.
+			// We're avoiding flooding CPU with too short querys (which implies too big results).
 			if (uri.getLastPathSegment().equals(SearchManager.SUGGEST_URI_PATH_QUERY) == true ||
 					formatQuery(uri.getLastPathSegment()).length() < 4) {
 				return cursor;
