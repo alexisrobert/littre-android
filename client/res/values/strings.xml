@@ -27,7 +27,10 @@
 <string name="no_result_title">Search</string>
 <string name="no_result_message">No result, press "Back" to get back.</string>
 
+<!-- Results title -->
 <string name="results_title">%s - %d results</string>
+
+<!-- Global search text -->
 <string name="searching_description">Definitions from the Littré dictionary</string>
 
 <!-- Dialog box when there is no network connectivity available -->
@@ -45,7 +48,7 @@
 <string name="md5check_message">Verifying the download ...</string>
 <string name="downloading_error">Error while downloading, please try again later.</string>
 
-<!-- URL resources -->
+<!-- URL resources (don't translate) -->
 <string name="indexurl">http://alexissoft.free.fr/littre/XMLittre.idx</string>
 <string name="md5url">http://alexissoft.free.fr/littre/XMLittre.md5</string>
 <string name="wordcounturl">http://alexissoft.free.fr/littre/wordcount</string>

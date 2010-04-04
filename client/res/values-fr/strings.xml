@@ -5,33 +5,44 @@
 <string name="searchhint">Mot à chercher ...</string>
 <string name="searchlabel">Recherche</string>
 
+<!-- Home list strings -->
 <string name="home_alphabet">Alphabet</string>
 <string name="home_search">Rechercher</string>
 <string name="home_history">Historique</string>
 
+<!-- Menu/Buttons strings -->
 <string name="menu_share">Partager</string>
 <string name="menu_search">Recherche</string>
 <string name="back_button">Retour</string>
 
+<!-- History live folder -->
 <string name="history_livefolder_title">Historique</string>
 
+<!-- History activity strings -->
 <string name="history_title">%s - Historique</string>
 <string name="history_context_title">Historique</string>
 <string name="history_context_delete">Supprimer l'élément</string>
 
+<!-- Dialog box when there is no result found for the query -->
 <string name="no_result_title">Recherche</string>
 <string name="no_result_message">Aucun résultat, appuyez sur "Retour" pour revenir.</string>
 
+<!-- Results title -->
 <string name="results_title">%s - %d résultats</string>
+
+<!-- Global search text -->
 <string name="searching_description">Définitions du dictionnaire Littré</string>
 
+<!-- Dialog box when there is no network connectivity available -->
 <string name="no_network_title">Pas de réseau</string>
 <string name="no_network_message">Vous devez être connectés pour afficher une définition.</string>
 <string name="no_network_idx_message">Vous devez être connectés pour télécharger l\'index (construit au premier lancement).</string>
 
+<!-- Dialog box which shows while the definition is loading -->
 <string name="loadingdef_title">Recherche de votre définition</string>
 <string name="loadingdef_message">Veuillez patienter ...</string>
 
+<!-- Index download titles -->
 <string name="downloading_title">Téléchargement de l'index</string>
 <string name="downloading_message">Veuillez patienter, téléchargement de l'index ...</string>
 <string name="md5check_message">Vérification du téléchargement ...</string>
