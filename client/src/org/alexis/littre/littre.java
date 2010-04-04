@@ -69,9 +69,9 @@ public class littre extends Activity {
         List<Map<String,String>> menulist = new ArrayList<Map<String,String>>();
         
         // Arggg... put this in a resource XML file! Or make them at-least final !
-        addMenuItem("Alphabet", android.R.drawable.ic_menu_directions, menulist);
-        addMenuItem("Rechercher", android.R.drawable.ic_menu_search, menulist);
-        addMenuItem("Historique", android.R.drawable.ic_menu_recent_history, menulist);
+        addMenuItem(getString(R.string.home_alphabet), android.R.drawable.ic_menu_directions, menulist);
+        addMenuItem(getString(R.string.home_search), android.R.drawable.ic_menu_search, menulist);
+        addMenuItem(getString(R.string.home_history), android.R.drawable.ic_menu_recent_history, menulist);
         
         SimpleAdapter adapter = new SimpleAdapter(this, menulist, R.layout.welcomeitem, MENUMAPPING_FROM, MENUMAPPING_TO);
         ((ListView)this.findViewById(R.id.welcomelist)).setAdapter(adapter);
@@ -128,7 +128,7 @@ public class littre extends Activity {
 				   * This function is running for a long time and we want to consume the less memory possible. */
 		
 		ProgressDialog d = new ProgressDialog(this);
-		d.setTitle("Téléchargement de l'index");
+		d.setTitle(getString(R.string.downloading_title));
 		d.setMessage(getString(R.string.downloading_message));
 		d.setIndeterminate(false);
 		
@@ -271,8 +271,8 @@ public class littre extends Activity {
 			
 			if (result == false) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(activity);
-				builder.setTitle("Téléchargement de l'index")
-					.setMessage("Erreur lors du téléchargement, veuillez réessayer plus tard.")
+				builder.setTitle(activity.getString(R.string.downloading_title))
+					.setMessage(activity.getString(R.string.downloading_error))
 					.setNeutralButton("Fermer", new DialogInterface.OnClickListener() {
 					
 					@Override

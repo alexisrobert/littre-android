@@ -24,7 +24,7 @@
 		<activity android:name="HistoryActivity"></activity>
 		<!-- We'll activate HistoryLiveFolder as soon as Android has a PROPER API for managing
 			 live folders Intents. WE DON'T WANT A NUMERIC _ID ! -->
-		<activity android:name="HistoryLiveFolder" android:label="Historique">
+		<activity android:name="HistoryLiveFolder" android:label="@string/history_livefolder_title">
  			<intent-filter>
 				<action android:name="android.intent.action.CREATE_LIVE_FOLDER" />
 				<category android:name="android.intent.category.DEFAULT" />

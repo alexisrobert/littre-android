@@ -224,7 +224,7 @@ public class WordListActivity extends ListActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-    	MenuItem menuit_search = menu.add(0, Menu.FIRST, 0, "Rechercher");
+    	MenuItem menuit_search = menu.add(0, Menu.FIRST, 0, getString(R.string.menu_search));
     	menuit_search.setIcon(android.R.drawable.ic_menu_search);
         
         return true;

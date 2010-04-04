@@ -1,22 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-<string name="app_name">Dictionnaire Littré</string>
-<string name="searchhint">Mot à chercher ...</string>
-<string name="searchlabel">Recherche</string>
+<string name="app_name">Littré dictionary</string>
+
+<string name="searchhint">Word to search ...</string>
+<string name="searchlabel">Search</string>
+
+<!-- Home list strings -->
+<string name="home_alphabet">Alphabet</string>
+<string name="home_search">Search</string>
+<string name="home_history">History</string>
+
+<!-- Menu/Buttons strings -->
+<string name="menu_share">Share</string>
+<string name="menu_search">Search</string>
+<string name="back_button">Back</string>
+
+<!-- History live folder -->
+<string name="history_livefolder_title">History</string>
+
+<!-- History activity strings -->
+<string name="history_title">%s - History</string>
+<string name="history_context_title">History</string>
+<string name="history_context_delete">Delete</string>
+
+<!-- Dialog box when there is no result found for the query -->
+<string name="no_result_title">Search</string>
+<string name="no_result_message">No result, press "Back" to get back.</string>
+
+<string name="results_title">%s - %d results</string>
+<string name="searching_description">Definitions from the Littré dictionary</string>
+
+<!-- Dialog box when there is no network connectivity available -->
+<string name="no_network_title">No network connectivity</string>
+<string name="no_network_message">You must be online to show a definition.</string>
+<string name="no_network_idx_message">You must be online to download the index (downloaded only at the first launch).</string>
+
+<!-- Dialog box which shows while the definition is loading -->
+<string name="loadingdef_title">Searching your definition</string>
+<string name="loadingdef_message">Please wait ...</string>
+
+<!-- Index download titles -->
+<string name="downloading_title">Index downloading</string>
+<string name="downloading_message">Please wait, downloading the index ...</string>
+<string name="md5check_message">Verifying the download ...</string>
+<string name="downloading_error">Error while downloading, please try again later.</string>
+
+<!-- URL resources -->
 <string name="indexurl">http://alexissoft.free.fr/littre/XMLittre.idx</string>
 <string name="md5url">http://alexissoft.free.fr/littre/XMLittre.md5</string>
 <string name="wordcounturl">http://alexissoft.free.fr/littre/wordcount</string>
 <string name="definitionurl">http://alexissoft.free.fr/littre/definition.php?offset=%d&amp;size=%d</string>
-<string name="no_result_message">Aucun résultat, appuyez sur "Retour" pour revenir.</string>
-<string name="no_result_title">Recherche</string>
-<string name="menu_search">Recherche</string>
-<string name="no_network_title">Pas de réseau</string>
-<string name="no_network_message">Vous devez être connectés pour afficher une définition.</string>
-<string name="no_network_idx_message">Vous devez être connectés pour télécharger l\'index (construit au premier lancement).</string>
-<string name="loadingdef_title">Recherche de votre définition</string>
-<string name="loadingdef_message">Veuillez patienter ...</string>
-<string name="results_title">%s - %d résultats</string>
-<string name="searching_description">Définitions du dictionnaire Littré</string>
-<string name="downloading_message">Veuillez patienter, téléchargement de l'index ...</string>
-<string name="md5check_message">Vérification du téléchargement ...</string>
 </resources>

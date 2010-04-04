@@ -37,7 +37,7 @@ public class HistoryLiveFolder extends Activity {
         
         if (LiveFolders.ACTION_CREATE_LIVE_FOLDER.equals(action)) {
             setResult(RESULT_OK, createLiveFolder(this, CONTENT_URI,
-                    "Historique", R.drawable.icon));
+                    getString(R.string.history_livefolder_title), R.drawable.icon));
         } else {
             setResult(RESULT_CANCELED);
         }

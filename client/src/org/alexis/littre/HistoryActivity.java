@@ -32,7 +32,7 @@ public class HistoryActivity extends WordListActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-	    setTitle("Dictionnaire Littré - Historique");
+	    setTitle(String.format(getString(R.string.history_title),getString(R.string.app_name)));
 	    
 	    registerForContextMenu(this.getListView());
 	    
@@ -54,8 +54,8 @@ public class HistoryActivity extends WordListActivity {
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
     	super.onCreateContextMenu(menu, v, menuInfo);
     	
-    	menu.setHeaderTitle("Historique");
-    	menu.add(0, Menu.FIRST+100, 0, "Supprimer");
+    	menu.setHeaderTitle(getString(R.string.history_context_title));
+    	menu.add(0, Menu.FIRST+100, 0, getString(R.string.history_context_delete));
     }
 	
 	@Override

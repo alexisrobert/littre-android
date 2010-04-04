@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<string name="app_name">Dictionnaire Littré</string>
+
+<string name="searchhint">Mot à chercher ...</string>
+<string name="searchlabel">Recherche</string>
+
+<string name="home_alphabet">Alphabet</string>
+<string name="home_search">Rechercher</string>
+<string name="home_history">Historique</string>
+
+<string name="menu_share">Partager</string>
+<string name="menu_search">Recherche</string>
+<string name="back_button">Retour</string>
+
+<string name="history_livefolder_title">Historique</string>
+
+<string name="history_title">%s - Historique</string>
+<string name="history_context_title">Historique</string>
+<string name="history_context_delete">Supprimer</string>
+
+<string name="no_result_title">Recherche</string>
+<string name="no_result_message">Aucun résultat, appuyez sur "Retour" pour revenir.</string>
+
+<string name="results_title">%s - %d résultats</string>
+<string name="searching_description">Définitions du dictionnaire Littré</string>
+
+<string name="no_network_title">Pas de réseau</string>
+<string name="no_network_message">Vous devez être connectés pour afficher une définition.</string>
+<string name="no_network_idx_message">Vous devez être connectés pour télécharger l\'index (construit au premier lancement).</string>
+
+<string name="loadingdef_title">Recherche de votre définition</string>
+<string name="loadingdef_message">Veuillez patienter ...</string>
+
+<string name="downloading_title">Téléchargement de l'index</string>
+<string name="downloading_message">Veuillez patienter, téléchargement de l'index ...</string>
+<string name="md5check_message">Vérification du téléchargement ...</string>
+<string name="downloading_error">Erreur lors du téléchargement, veuillez réessayer plus tard.</string>
+</resources>

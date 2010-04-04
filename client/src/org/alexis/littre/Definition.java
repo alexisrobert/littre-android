@@ -67,7 +67,7 @@ public class Definition extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-    	MenuItem menuit_share = menu.add(0, Menu.FIRST, 0, "Partager");
+    	MenuItem menuit_share = menu.add(0, Menu.FIRST, 0, getString(R.string.menu_share));
     	menuit_share.setIcon(android.R.drawable.ic_menu_share);
         return true;
     }
