@@ -17,7 +17,7 @@
 
 <string name="history_title">%s - Historique</string>
 <string name="history_context_title">Historique</string>
-<string name="history_context_delete">Supprimer</string>
+<string name="history_context_delete">Supprimer l'élément</string>
 
 <string name="no_result_title">Recherche</string>
 <string name="no_result_message">Aucun résultat, appuyez sur "Retour" pour revenir.</string>

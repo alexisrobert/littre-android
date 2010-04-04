@@ -21,7 +21,7 @@
 <!-- History activity strings -->
 <string name="history_title">%s - History</string>
 <string name="history_context_title">History</string>
-<string name="history_context_delete">Delete</string>
+<string name="history_context_delete">Delete item</string>
 
 <!-- Dialog box when there is no result found for the query -->
 <string name="no_result_title">Search</string>
