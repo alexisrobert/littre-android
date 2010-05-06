@@ -54,8 +54,11 @@ public class HistoryActivity extends WordListActivity {
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
     	super.onCreateContextMenu(menu, v, menuInfo);
     	
+		String word = (String)getListView().getItemAtPosition(
+				((AdapterContextMenuInfo)menuInfo).position);
+    	
     	menu.setHeaderTitle(getString(R.string.history_context_title));
-    	menu.add(0, Menu.FIRST+100, 0, getString(R.string.history_context_delete));
+    	menu.add(0, Menu.FIRST+100, 0, String.format(getString(R.string.history_context_delete), word));
     }
 	
 	@Override

@@ -17,7 +17,6 @@
 
 package org.alexis.libstardict;
 
-import java.io.File;
 import java.util.Date;
 import java.util.Vector;
 
@@ -38,7 +37,8 @@ public class Index {
 		indexdb.getWritableDatabase().close(); // Open a writable database to enable upgrading.
 		
 		System.loadLibrary("littre");
-		this.indexpath = new File(indexdb.indexDir(), "XMLittre.idx").getAbsolutePath();
+		
+		this.indexpath = Preferences.getIndexPath(ctx).getAbsolutePath();
 	}
 	
 	public native String[] getRawWords(String query);

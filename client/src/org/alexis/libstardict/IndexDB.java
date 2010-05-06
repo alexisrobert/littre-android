@@ -26,19 +26,42 @@ import android.util.Log;
 
 public class IndexDB extends SQLiteOpenHelper {
 	private static int HISTORY_DEPTH = 50; // TODO: Make this configurable
-	private File indexDir = null;
 	
 	public IndexDB(Context context) {
 		super(context, "index.db", null, 4);
-		indexDir = context.getFilesDir();
-	}
-	
-	public File indexDir() {
-		return indexDir;
 	}
 	
 	public static boolean needsFilling(Context ctx) {
-		return !(new File(ctx.getFilesDir(),"XMLittre.idx").isFile());
+		return !(Preferences.getIndexPath(ctx).isFile());
+	}
+	
+	public static boolean moveToSD(Context ctx) {
+		if (Preferences.isIndexSD(ctx))
+			return true;
+		
+		Log.i("littre", "Moving index to SDCard ...");
+		
+		// Making sure SDCard directories structure is ready
+		if (!Preferences.makeSDDirs())
+			return false;
+		
+		try {
+			return FileUtils.moveFile(Preferences.getIndexPath(ctx),
+										new File(Preferences.SDCARD_DATA, Preferences.FILENAME));
+		} catch (Exception e) {
+			Log.i("littre", e.getMessage());
+			return false;
+		}
+	}
+	
+	public static boolean moveToInternal(Context ctx) {
+		if (!Preferences.isIndexSD(ctx))
+			return true;
+		
+		Log.i("littre", "Moving index to internal memory ...");
+		
+		return FileUtils.moveFile(Preferences.getIndexPath(ctx),
+									new File(ctx.getFilesDir(), Preferences.FILENAME));
 	}
 	
 	@Override

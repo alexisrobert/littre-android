@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.alexis.libstardict.IndexDB;
+import org.alexis.libstardict.Preferences;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -72,6 +73,7 @@ public class littre extends Activity {
         addMenuItem(getString(R.string.home_alphabet), android.R.drawable.ic_menu_directions, menulist);
         addMenuItem(getString(R.string.home_search), android.R.drawable.ic_menu_search, menulist);
         addMenuItem(getString(R.string.home_history), android.R.drawable.ic_menu_recent_history, menulist);
+        addMenuItem("Settings", android.R.drawable.ic_menu_preferences, menulist); // TODO: Put this in a REAL menu.
         
         SimpleAdapter adapter = new SimpleAdapter(this, menulist, R.layout.welcomeitem, MENUMAPPING_FROM, MENUMAPPING_TO);
         ((ListView)this.findViewById(R.id.welcomelist)).setAdapter(adapter);
@@ -91,6 +93,10 @@ public class littre extends Activity {
 					Intent i2 = new Intent(INTENT_GET_HISTORY, null, getApplicationContext(), HistoryActivity.class);
 		        	startActivity(i2);
 		        	break;
+				case 3: // Settings
+					Intent i3 = new Intent(null, null, getApplicationContext(), PreferencesActivity.class);
+					startActivity(i3);
+					break;
 				}
 				Log.i("littre", String.valueOf(id));
 			}
@@ -114,7 +120,8 @@ public class littre extends Activity {
     /** INDEX DOWNLOADING PART **/
     
     private void downloadIndex() {
-	    ConnectivityManager c = (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+	    ConnectivityManager c = (ConnectivityManager)getApplicationContext().
+	    							getSystemService(Context.CONNECTIVITY_SERVICE);
 	    
 		if (c.getActiveNetworkInfo() == null || c.getActiveNetworkInfo().isAvailable() == false) {
 			AlertDialog.Builder alert = new AlertDialog.Builder(this);
@@ -123,9 +130,6 @@ public class littre extends Activity {
 			alert.show();
 			return;
 		}
-		
-		c = null; /* Trash the object, telling the GC to free memory at the next run.
-				   * This function is running for a long time and we want to consume the less memory possible. */
 		
 		ProgressDialog d = new ProgressDialog(this);
 		d.setTitle(getString(R.string.downloading_title));
@@ -173,8 +177,10 @@ public class littre extends Activity {
 				URL url = new URL(activity.getString(R.string.indexurl));
 				HttpURLConnection http = (HttpURLConnection) url.openConnection();
 				http.connect();
+				
 				BufferedInputStream fis = new BufferedInputStream(http.getInputStream());
-				FileOutputStream fos = new FileOutputStream(new File(activity.getFilesDir(),"XMLittre.idx.tmp"));
+				FileOutputStream fos = new FileOutputStream(
+						new File(Preferences.getIndexDir(activity),"XMLittre.idx.tmp"));
 				
 				byte[] bytes = new byte[20480];
 				int progress = 0;
@@ -197,22 +203,25 @@ public class littre extends Activity {
 				String ourmd5 = computeMD5();
 				
 				if (origmd5.equals(ourmd5) == true) {
-					Log.i("littre", String.format("MD5 check ok : %s (remote) == %s (local)",origmd5,ourmd5));
+					Log.i("littre", String.format("MD5 check ok : %s (remote) == %s (local)",
+							origmd5,ourmd5));
 					downloadok = true;
 				} else {
-					Log.i("littre", String.format("MD5 check error : %s (remote) != %s (local)", origmd5, ourmd5));
+					Log.i("littre", String.format("MD5 check error : %s (remote) != %s (local)",
+							origmd5, ourmd5));
 				}
 			} catch (IOException e){
 				e.printStackTrace();
 			}
 			
 			if (downloadok == true) {
-				new File(activity.getFilesDir(),"XMLittre.idx.tmp").renameTo(new File(activity.getFilesDir(),"XMLittre.idx"));
+				new File(Preferences.getIndexDir(activity),"XMLittre.idx.tmp")
+					.renameTo(Preferences.getIndexPath(activity));
 			
 				Log.d("libstardict", "Download finished!");
 			} else {
 				
-				new File(activity.getFilesDir(),"XMLittre.idx.tmp").delete();
+				new File(Preferences.getIndexDir(activity),"XMLittre.idx.tmp").delete();
 				Log.d("libstardict", "Error while downloading !");
 			}
 			
@@ -237,7 +246,8 @@ public class littre extends Activity {
 			
 			try {
 				MessageDigest digest = MessageDigest.getInstance("MD5");
-				FileInputStream is = new FileInputStream(new File(activity.getFilesDir(),"XMLittre.idx.tmp"));
+				FileInputStream is = new FileInputStream(
+						new File(Preferences.getIndexDir(activity),"XMLittre.idx.tmp"));
 				
 				byte[] bytes = new byte[20480];
 				int readBytes = 0;
