@@ -41,6 +41,10 @@ public class IndexDB extends SQLiteOpenHelper {
 		
 		Log.i("littre", "Moving index to SDCard ...");
 		
+		// Making sure the SDCard is mounted in rw
+		if (!FileUtils.isSDMounted())
+			return false;
+		
 		// Making sure SDCard directories structure is ready
 		if (!Preferences.makeSDDirs())
 			return false;

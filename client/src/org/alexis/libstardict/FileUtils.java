@@ -7,6 +7,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import android.os.Environment;
+import android.util.Log;
+
 public class FileUtils {
 	public static boolean copyFile(File source, File dest) {
 		BufferedInputStream bis = null;
@@ -39,5 +42,10 @@ public class FileUtils {
 	// WARNING ! Inefficient if source and dest are on the same filesystem !
 	public static boolean moveFile(File source, File dest) {
 		return copyFile(source, dest) && source.delete();
+	}
+	
+	// Returns true if the sdcard is mounted rw
+	public static boolean isSDMounted() {
+		return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
 	}
 }

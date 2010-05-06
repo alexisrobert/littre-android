@@ -217,7 +217,7 @@ public class littre extends Activity {
 			if (downloadok == true) {
 				new File(Preferences.getIndexDir(activity),"XMLittre.idx.tmp")
 					.renameTo(Preferences.getIndexPath(activity));
-			
+				
 				Log.d("libstardict", "Download finished!");
 			} else {
 				
