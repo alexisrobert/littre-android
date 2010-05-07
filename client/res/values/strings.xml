@@ -9,6 +9,7 @@
 <string name="home_alphabet">Alphabet</string>
 <string name="home_search">Search</string>
 <string name="home_history">History</string>
+<string name="home_settings">Settings</string>
 
 <!-- Menu/Buttons strings -->
 <string name="menu_share">Share</string>
@@ -48,7 +49,14 @@
 <string name="md5check_message">Verifying the download ...</string>
 <string name="downloading_error">Error while downloading, please try again later.</string>
 
+<!-- Settings activity text -->
+<string name="settings_storage_title">Storage location</string>
+<string name="settings_index_title">Index storage</string>
+<string name="settings_index_summary">Choose the location of the index file (sdcard or internal memory)</string>
+
 <!-- Settings for index storage -->
+<string name="sdcard_pref_dialogtitle">Storage location</string>
+
 <string-array name="sdcard_pref_key">
 	<item>Internal memory</item>
 	<item>SDCard</item>
@@ -58,6 +66,13 @@
 	<item>internal</item>
 	<item>sdcard</item>
 </string-array>
+
+<!-- Moving progress/error dialog -->
+<string name="moving_progress_title">Please wait ...</string>
+<string name="moving_progress_message">Moving your index file ...</string>
+<string name="moving_nosd_title">Error</string>
+<string name="moving_nosd_message">You must have an sdcard available to change this parameter.</string>
+<string name="moving_nosd_button">Ok</string>
 
 <!-- URL resources (don't translate) -->
 <string name="indexurl">http://alexissoft.free.fr/littre/XMLittre.idx</string>

@@ -9,6 +9,7 @@
 <string name="home_alphabet">Alphabet</string>
 <string name="home_search">Rechercher</string>
 <string name="home_history">Historique</string>
+<string name="home_settings">Préférences</string>
 
 <!-- Menu/Buttons strings -->
 <string name="menu_share">Partager</string>
@@ -43,8 +44,28 @@
 <string name="loadingdef_message">Veuillez patienter ...</string>
 
 <!-- Index download titles -->
-<string name="downloading_title">Téléchargement de l'index</string>
-<string name="downloading_message">Veuillez patienter, téléchargement de l'index ...</string>
+<string name="downloading_title">Téléchargement de l\'index</string>
+<string name="downloading_message">Veuillez patienter, téléchargement de l\'index ...</string>
 <string name="md5check_message">Vérification du téléchargement ...</string>
 <string name="downloading_error">Erreur lors du téléchargement, veuillez réessayer plus tard.</string>
+
+<!-- Settings activity text -->
+<string name="settings_storage_title">Lieu de stockage</string>
+<string name="settings_index_title">Stockage de l\'index</string>
+<string name="settings_index_summary">Choisissez où l\'index sera stocké (carte SD ou mémoire interne)</string>
+
+<!-- Settings for index storage -->
+<string name="sdcard_pref_dialogtitle">Lieu de stockage</string>
+
+<string-array name="sdcard_pref_key">
+	<item>Mémoire interne</item>
+	<item>Carte SD</item>
+</string-array>
+
+<!-- Moving progress/error dialog -->
+<string name="moving_progress_title">Veuillez patienter ...</string>
+<string name="moving_progress_message">Déplacement du fichier d\'index ...</string>
+<string name="moving_nosd_title">Erreur</string>
+<string name="moving_nosd_message">Vous devez avoir une carte SD disponible pour changer ce paramètre.</string>
+<string name="moving_nosd_button">Ok</string>
 </resources>

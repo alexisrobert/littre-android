@@ -2,7 +2,6 @@ package org.alexis.littre;
 
 import org.alexis.libstardict.FileUtils;
 import org.alexis.libstardict.IndexDB;
-import org.alexis.libstardict.Preferences;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -29,9 +28,9 @@ public class PreferencesActivity extends PreferenceActivity {
 				
 				if (!FileUtils.isSDMounted()) {
 					AlertDialog.Builder dialog = new AlertDialog.Builder(context);
-					dialog.setTitle("Error");
-					dialog.setMessage("You must have an sdcard to change this parameter.");
-					dialog.setNeutralButton("Ok", null);
+					dialog.setTitle(getString(R.string.moving_nosd_title));
+					dialog.setMessage(getString(R.string.moving_nosd_message));
+					dialog.setNeutralButton(getString(R.string.moving_nosd_button), null);
 					dialog.show();
 					return false;
 				}
@@ -63,8 +62,8 @@ public class PreferencesActivity extends PreferenceActivity {
 		@Override
 		protected void onPreExecute() {
 			dialog = new ProgressDialog(context);
-			dialog.setTitle("Please wait ...");
-			dialog.setMessage("Moving your index file ...");
+			dialog.setTitle(context.getString(R.string.moving_progress_title));
+			dialog.setMessage(context.getString(R.string.moving_progress_message));
 			dialog.setCancelable(false);
 			dialog.show();
 		}

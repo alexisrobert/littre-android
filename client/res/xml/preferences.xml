@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
   xmlns:android="http://schemas.android.com/apk/res/android">
-  <PreferenceCategory android:title="Storage location">
+  <PreferenceCategory android:title="@string/settings_storage_title">
   <ListPreference android:entries="@array/sdcard_pref_key" 
 	android:entryValues="@array/sdcard_pref_value"
-	android:dialogTitle="Storage location"
-	android:summary="Choose where you want to store the index file (sdcard or internal memory)" 
+	android:dialogTitle="@string/sdcard_pref_dialogtitle"
+	android:summary="@string/settings_index_summary" 
 	android:key="index_sdcard"
-	android:title="Index storage"
-	android:negativeButtonText="Cancel" 
+	android:title="@string/settings_index_title"
  	android:enabled="true"
  	android:defaultValue="internal">
   </ListPreference> 
