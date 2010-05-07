@@ -4,12 +4,14 @@ import java.io.File;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
 public class Preferences {
 	public static final String FILENAME = "XMLittre.idx";
-	public static final String SDCARD_DATA = "/sdcard/Android/data/org.alexis.littre/";
+	public static final String SDCARD_DATA = Environment.getExternalStorageDirectory() + 
+													"/Android/data/org.alexis.littre/";
 	
 	/* Stores index location (sdcard or internal memory) */
 	public static File getIndexPath(Context ctx) {
@@ -25,6 +27,14 @@ public class Preferences {
 		} else { // Internal memory
 			return ctx.getFilesDir();
 		}
+	}
+	
+	public static File getInternalPath(Context ctx) {
+		return new File(ctx.getFilesDir(), FILENAME);
+	}
+	
+	public static File getSDPath(Context ctx) {
+		return new File(SDCARD_DATA, FILENAME);
 	}
 	
 	public static boolean isIndexSD(Context ctx) {
@@ -49,7 +59,7 @@ public class Preferences {
 		return f.isDirectory() || f.mkdirs();
 	}
 	
-	private static SharedPreferences getPreferences(Context ctx) {
+	public static SharedPreferences getPreferences(Context ctx) {
 		return PreferenceManager.getDefaultSharedPreferences(ctx);
 	}
 }

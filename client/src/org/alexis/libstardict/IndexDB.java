@@ -17,8 +17,6 @@
 
 package org.alexis.libstardict;
 
-import java.io.File;
-
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
@@ -36,22 +34,22 @@ public class IndexDB extends SQLiteOpenHelper {
 	}
 	
 	public static boolean moveToSD(Context ctx) {
-		if (Preferences.isIndexSD(ctx))
+		if (!Preferences.getInternalPath(ctx).isFile())
 			return true;
 		
-		Log.i("littre", "Moving index to SDCard ...");
+		Log.i("littre", "Moving index to sdcard ...");
 		
-		// Making sure the SDCard is mounted in rw
+		// Making sure the sdcard is mounted in rw
 		if (!FileUtils.isSDMounted())
 			return false;
 		
-		// Making sure SDCard directories structure is ready
+		// Making sure sdcard directories structure is ready
 		if (!Preferences.makeSDDirs())
 			return false;
 		
 		try {
-			return FileUtils.moveFile(Preferences.getIndexPath(ctx),
-										new File(Preferences.SDCARD_DATA, Preferences.FILENAME));
+			return FileUtils.moveFile(Preferences.getInternalPath(ctx),
+										Preferences.getSDPath(ctx));
 		} catch (Exception e) {
 			Log.i("littre", e.getMessage());
 			return false;
@@ -59,13 +57,13 @@ public class IndexDB extends SQLiteOpenHelper {
 	}
 	
 	public static boolean moveToInternal(Context ctx) {
-		if (!Preferences.isIndexSD(ctx))
+		if (Preferences.getInternalPath(ctx).isFile())
 			return true;
 		
 		Log.i("littre", "Moving index to internal memory ...");
 		
-		return FileUtils.moveFile(Preferences.getIndexPath(ctx),
-									new File(ctx.getFilesDir(), Preferences.FILENAME));
+		return FileUtils.moveFile(Preferences.getSDPath(ctx),
+									Preferences.getInternalPath(ctx));
 	}
 	
 	@Override

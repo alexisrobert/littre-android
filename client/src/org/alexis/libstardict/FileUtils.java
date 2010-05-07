@@ -8,7 +8,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 import android.os.Environment;
-import android.util.Log;
 
 public class FileUtils {
 	public static boolean copyFile(File source, File dest) {
