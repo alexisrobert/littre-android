@@ -98,7 +98,6 @@ public class littre extends Activity {
 					startActivity(i3);
 					break;
 				}
-				Log.i("littre", String.valueOf(id));
 			}
 		});
         
