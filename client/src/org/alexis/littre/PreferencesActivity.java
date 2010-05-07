@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.Preference.OnPreferenceChangeListener;
+import android.util.Log;
 
 public class PreferencesActivity extends PreferenceActivity {
 	private static PreferencesActivity context = null;
@@ -75,10 +76,11 @@ public class PreferencesActivity extends PreferenceActivity {
 			// If the thread didn't succeed, we don't want the preferences file to be
 			// in an incoherent state.
 			if (result == false) {
+				Log.i("littre", "Moving failed ! Restoring old settings ...");
 				if (direction.equals("sdcard"))
-					Preferences.getPreferences(context).edit().putString("index_sdcard", "internal");
+					context.getPreferenceScreen().getEditor().putString("index_sdcard", "internal").commit();
 				else
-					Preferences.getPreferences(context).edit().putString("index_sdcard", "sdcard");
+					context.getPreferenceScreen().getEditor().putString("index_sdcard", "sdcard").commit();
 			}
 		}
 	}
