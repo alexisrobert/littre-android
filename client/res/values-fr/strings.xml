@@ -9,6 +9,7 @@
 <string name="home_alphabet">Alphabet</string>
 <string name="home_search">Rechercher</string>
 <string name="home_history">Historique</string>
+<string name="home_random">Mot aléatoire</string>
 <string name="home_settings">Préférences</string>
 
 <!-- Menu/Buttons strings -->
@@ -42,6 +43,10 @@
 <!-- Dialog box which shows while the definition is loading -->
 <string name="loadingdef_title">Recherche de votre définition</string>
 <string name="loadingdef_message">Veuillez patienter ...</string>
+
+<!-- Dialog box which shows while a random word is being picked -->
+<string name="loadingrandom_title">Recherche de votre définition</string>
+<string name="loadingrandom_message">Choix d'un mot aléatoire ...</string>
 
 <!-- Index download titles -->
 <string name="downloading_title">Téléchargement de l\'index</string>

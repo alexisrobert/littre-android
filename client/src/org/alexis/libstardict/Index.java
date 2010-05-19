@@ -72,6 +72,7 @@ public class Index {
 	
 	public native Word getWord(String name);
 	public native Word getWordFromId(int id);
+	public native int indexSize();
 	
 	private Vector<String> wordsQuery(String sql, String[] params) {
 		Vector<String> data = new Vector<String>();

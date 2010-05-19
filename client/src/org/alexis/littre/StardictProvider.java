@@ -41,6 +41,7 @@ import android.util.Log;
  * they just need to fire an intent (to SearchActivity) to show it.
  * 
  * content://org.alexis.littre.stardictprovider/words - maps to Index.getWords
+ * content://org.alexis.littre.stardictprovider/words_number - maps to Index.indexSize
  * content://org.alexis.littre.stardictprovider/letter - maps to Index.getLetter
  * content://org.alexis.littre.stardictprovider/history - maps to Index.getHistory
  * content://org.alexis.littre.stardictprovider/history/livefolder - you know ... stuff ... :p
@@ -48,6 +49,7 @@ import android.util.Log;
 
 public class StardictProvider extends ContentProvider {
 	private static final int WORDS = 10;
+	private static final int WORDS_NUMBER = 11;
 	private static final int LETTER = 20;
 	private static final int HISTORY = 30;
 	private static final int HISTORY_LIVEFOLDER = 31;
@@ -66,6 +68,8 @@ public class StardictProvider extends ContentProvider {
 	// Unused in this class, for global lisibility
 	public static final Uri WORDS_URI = 
         Uri.parse("content://org.alexis.littre.stardictprovider/words");
+	public static final Uri WORDS_NUMBER_URI =
+		Uri.parse("content://org.alexis.littre.stardictprovider/words_number");
 	public static final Uri LETTER_URI = 
         Uri.parse("content://org.alexis.littre.stardictprovider/letter");
 	public static final Uri HISTORY_URI = 
@@ -76,6 +80,7 @@ public class StardictProvider extends ContentProvider {
 	private static final HashMap<String,String> LIVE_FOLDER_PROJECTION_MAP;
 	static {
 		URI_MATCHER.addURI(AUTHORITY, "words", WORDS);
+		URI_MATCHER.addURI(AUTHORITY, "words_number", WORDS_NUMBER);
 		URI_MATCHER.addURI(AUTHORITY, "letter", LETTER);
 		URI_MATCHER.addURI(AUTHORITY, "history", HISTORY);
 		URI_MATCHER.addURI(AUTHORITY, "history/livefolder", HISTORY_LIVEFOLDER);
@@ -127,6 +132,7 @@ public class StardictProvider extends ContentProvider {
 	public boolean onCreate() {
 		if (this.idx == null)
 			idx = new Index(this.getContext());
+		
 		return true;
 	}
 	
@@ -149,6 +155,11 @@ public class StardictProvider extends ContentProvider {
 				words = idx.getRawLetter(selectionArgs[0]);
 			
 			return new WordCursor(words);
+		case WORDS_NUMBER:
+			MatrixCursor cursor2 = new MatrixCursor(new String[] {"number"});
+			cursor2.addRow(new Object[] {idx.indexSize()});
+			return cursor2;
+			
 		case SEARCH_SUGGEST:
 			MatrixCursor cursor = new MatrixCursor(SEARCH_COLUMNS);
 			
