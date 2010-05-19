@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <android/log.h>
+#include <math.h>
 #include "org_alexis_libstardict_Index.h"
 
 #define LOG_BASE10_2 0.30102999566398114
@@ -119,6 +120,17 @@ int callback_getletter(struct Word word, struct Word **work, int *size, char* pa
 	return 0;
 }
 
+/* WARNING ! callback_index_size returns an "invalid" structure.
+ *
+ * Here Wordlist will have no node, but a >0 number attribute.
+ * This attribute will store the number of all words in the index.
+ * This is a hack, I agree. If you have a better solution, please submit
+ * a patch. */
+
+int callback_index_size(struct Word word, struct Word **work, int *size, char *param) {
+	(*size)++;
+	return 0;
+}
 
 struct Wordlist parse(char *filename, int (*callbackptr)(struct Word, struct Word**, int *, char*), char* param) {
 	FILE *f = fopen(filename,"r");
@@ -320,3 +332,22 @@ JNIEXPORT jobjectArray JNICALL Java_org_alexis_libstardict_Index_getRawLetter(JN
 
 	return retval;
 }
+
+JNIEXPORT jint JNICALL Java_org_alexis_libstardict_Index_indexSize(JNIEnv *env, jobject parent) {
+	jint retval = 0;
+
+	// Getting filename
+	char *filename = (char*)(*env)->GetStringUTFChars(env,
+				(*env)->GetObjectField(env, parent,
+					(*env)->GetFieldID(env, (*env)->FindClass(env, "org/alexis/libstardict/Index"),
+						"indexpath", "Ljava/lang/String;")), NULL);
+
+	struct Wordlist words = parse(filename, &callback_index_size, NULL);
+
+	retval = words.number;
+
+	free(filename);
+
+	return retval;
+}
+

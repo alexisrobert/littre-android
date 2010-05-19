@@ -39,6 +39,14 @@ JNIEXPORT jobject JNICALL Java_org_alexis_libstardict_Index_getWord
 JNIEXPORT jobject JNICALL Java_org_alexis_libstardict_Index_getWordFromId
   (JNIEnv *, jobject, jint);
 
+/*
+ * Class:     org_alexis_libstardict_Index
+ * Method:    indexSize
+ * Signature: ()I
+ */
+JNIEXPORT jint JNICALL Java_org_alexis_libstardict_Index_indexSize
+  (JNIEnv *, jobject);
+
 #ifdef __cplusplus
 }
 #endif
