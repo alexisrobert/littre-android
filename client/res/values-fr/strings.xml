@@ -46,7 +46,7 @@
 
 <!-- Dialog box which shows while a random word is being picked -->
 <string name="loadingrandom_title">Recherche de votre définition</string>
-<string name="loadingrandom_message">Choix d'un mot aléatoire ...</string>
+<string name="loadingrandom_message">Choix d\'un mot aléatoire ...</string>
 
 <!-- Index download titles -->
 <string name="downloading_title">Téléchargement de l\'index</string>
