@@ -73,7 +73,7 @@ public class littre extends Activity {
         addMenuItem(getString(R.string.home_alphabet), android.R.drawable.ic_menu_directions, menulist);
         addMenuItem(getString(R.string.home_search), android.R.drawable.ic_menu_search, menulist);
         addMenuItem(getString(R.string.home_history), android.R.drawable.ic_menu_recent_history, menulist);
-        addMenuItem(getString(R.string.home_random), android.R.drawable.stat_notify_sync, menulist);
+        addMenuItem(getString(R.string.home_random), R.drawable.ic_menu_refresh, menulist);
         addMenuItem(getString(R.string.home_settings), android.R.drawable.ic_menu_preferences, menulist); // TODO: Put this in a REAL menu.
         
         SimpleAdapter adapter = new SimpleAdapter(this, menulist, R.layout.welcomeitem, MENUMAPPING_FROM, MENUMAPPING_TO);
