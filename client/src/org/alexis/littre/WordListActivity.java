@@ -250,11 +250,13 @@ public class WordListActivity extends ListActivity {
     protected void onSaveInstanceState(Bundle outState) {
     	super.onSaveInstanceState(outState);
     	
-    	Log.d("littre", "Saving instance state");
-    	
-    	String[] wordsarray = new String[0];
-    	wordsarray = words.toArray(wordsarray);
-    	outState.putStringArray(BUNDLE_WORDS_KEY, wordsarray);
+    	if (words != null) {
+    		Log.d("littre", "Saving instance state");
+    		
+    		String[] wordsarray = new String[0];
+    		wordsarray = words.toArray(wordsarray);
+    		outState.putStringArray(BUNDLE_WORDS_KEY, wordsarray);
+    	}
     }
     
     @Override
