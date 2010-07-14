@@ -57,6 +57,33 @@ func (d Definition) String() string {
 	return fmt.Sprintf("%s (%s)", d.Terme, d.Entete.Nature);
 }
 
+func (d Definition) Content() string {
+	data := "<div class='entete'>"
+	if d.Entete.Nature != "" {
+		data += fmt.Sprintf("<span class='prononciation'>%s</span>", d.Entete.Prononciation)
+		data += fmt.Sprintf("<span class='nature'>%s</span>", d.Entete.Nature)
+	}
+
+	data += d.Corps
+
+	for {
+		n := d.Rubriques.Len()
+
+		if n == 0 {
+			break
+		}
+
+		rub := d.Rubriques.Front().Value.(Rubrique)
+
+		data += fmt.Sprintf("<span class='rubrique' title='%s'>%s</span>", rub.Nom, rub.Corps)
+
+		d.Rubriques.Remove(d.Rubriques.Front())
+	}
+
+	data += "</div>"
+	return data
+}
+
 /********************
  * XML parsing land
  ********************/
@@ -136,7 +163,8 @@ func parseDefinition(terme string, p *xml.Parser) (*Definition, os.Error) {
 /* Recursively parses a definition body and replaces XML attributes with the
    corresponding HTML tag
 
-   TODO : Use a templating system. */
+   TODO : Use a templating system.
+   TODO2: Really parse variants. */
 func parseBody(node_name string, buf *string, p *xml.Parser) (os.Error) {
 	for {
 		t, err := p.Token()
@@ -191,7 +219,8 @@ func parseBody(node_name string, buf *string, p *xml.Parser) (os.Error) {
 						(*buf) += "</span>";
 					}
 			case xml.CharData:
-				(*buf) += strings.Replace(string([]byte(t)), "\t", "", -1)
+				(*buf) += strings.Replace(
+						strings.Replace(string([]byte(t)), "\t", "", -1), "\n", "", -1)
 			case xml.EndElement:
 				if t.Name.Local == node_name {
 					return nil;
@@ -237,6 +266,7 @@ func parser(filename string, data chan *Definition) {
 					}
 
 					// If there is a supplement
+					// TODO : Really manages this.
 					if _,err := getAttribute(t, "supplement") ; err == nil {
 						name = name+" (suppl.)";
 					}
@@ -271,6 +301,41 @@ func output_stdout(input_queue chan *Definition, quit chan bool) {
 	quit<-true
 }
 
+type IndexPosition struct {
+	offset int
+	size int
+	quit bool
+}
+
+func write_database(filename string, input_queue chan* Definition, index chan IndexPosition) {
+	f,err := os.Open(filename, os.O_WRONLY | os.O_CREAT, 0666)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		index<-IndexPosition{0,0,true}
+		return
+	}
+
+	pos := 0
+	for {
+		def := <-input_queue
+		if def == nil {
+			break
+		}
+
+		data := []byte(def.Content())
+
+		f.Write(data)
+
+		index<-IndexPosition{pos, len(data), false}
+
+		pos += len(data)
+	}
+
+	f.Close()
+
+	index<-IndexPosition{0,0,true}
+}
+
 /*******************
  * Main function
  *******************/
@@ -280,10 +345,15 @@ func main() {
 		return
 	}
 	input_queue := make(chan *Definition, 100);
-	quit_chan := make(chan bool);
+	index_chan := make(chan IndexPosition);
 
 	go parser(os.Args[1],input_queue)
-	go output_stdout(input_queue, quit_chan)
+	go write_database("XMLittre.dict", input_queue, index_chan)
 
-	<-quit_chan
+	for {
+		data := <-index_chan
+		if data.quit == true {
+			break
+		}
+	}
 }
