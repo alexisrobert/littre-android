@@ -207,6 +207,7 @@ func parser(filename string, data chan *Definition) {
 	f,err := os.Open(filename, os.O_RDONLY, 0666)
 	if err != nil {
 		fmt.Printf("%s\n", err.String())
+		data<-nil
 		return
 	}
 
@@ -274,10 +275,14 @@ func output_stdout(input_queue chan *Definition, quit chan bool) {
  * Main function
  *******************/
 func main() {
+	if len(os.Args) < 2 {
+		fmt.Fprintf(os.Stderr, "Usage: %s [filename]\n", os.Args[0]);
+		return
+	}
 	input_queue := make(chan *Definition, 100);
 	quit_chan := make(chan bool);
 
-	go parser("../xmlittre/data/littre/b.xml",input_queue)
+	go parser(os.Args[1],input_queue)
 	go output_stdout(input_queue, quit_chan)
 
 	<-quit_chan
