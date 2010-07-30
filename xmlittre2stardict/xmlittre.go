@@ -288,6 +288,17 @@ func parser(filename string, data chan *Definition) {
  * Output goroutines
  ********************/
 
+func int32_to_byte(integer int32) []byte {
+	var data = make([]byte, 4); // 4 bytes => 32 bits
+
+	for i := 0 ; i < 4; i++ {
+		data[3-i] = uint8(integer & 0xFFFF);
+		integer = integer >> 8;
+	}
+
+	return data;
+}
+
 func output_stdout(input_queue chan *Definition, quit chan bool) {
 	for {
 		def := <-input_queue
@@ -302,20 +313,48 @@ func output_stdout(input_queue chan *Definition, quit chan bool) {
 }
 
 type IndexPosition struct {
-	offset int
-	size int
-	quit bool
+	Name string
+	Offset int32
+	Size int32
+	Quit bool
+}
+
+func write_index(filename string, input_queue chan IndexPosition, quit chan bool) {
+	f,err := os.Open(filename, os.O_WRONLY | os.O_CREAT, 0666)
+	defer f.Close()
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "%v\n", err)
+		quit<-true
+		return
+	}
+
+	for {
+		pos := <-input_queue
+		if pos.Quit == true {
+			break
+		}
+
+		f.Write([]byte(pos.Name))
+		f.Write(int32_to_byte(pos.Offset))
+		f.Write(int32_to_byte(pos.Size))
+		f.Write([]byte{0})
+	}
+
+	quit<-true
 }
 
 func write_database(filename string, input_queue chan* Definition, index chan IndexPosition) {
 	f,err := os.Open(filename, os.O_WRONLY | os.O_CREAT, 0666)
+	defer f.Close()
+
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "%v\n", err)
-		index<-IndexPosition{0,0,true}
+		index<-IndexPosition{"",0,0,true}
 		return
 	}
 
-	pos := 0
+	pos := int32(0)
 	for {
 		def := <-input_queue
 		if def == nil {
@@ -326,14 +365,12 @@ func write_database(filename string, input_queue chan* Definition, index chan In
 
 		f.Write(data)
 
-		index<-IndexPosition{pos, len(data), false}
+		index<-IndexPosition{def.Terme, pos, int32(len(data)), false}
 
-		pos += len(data)
+		pos += int32(len(data))
 	}
 
-	f.Close()
-
-	index<-IndexPosition{0,0,true}
+	index<-IndexPosition{"",0,0,true}
 }
 
 /*******************
@@ -346,13 +383,15 @@ func main() {
 	}
 	input_queue := make(chan *Definition, 100);
 	index_chan := make(chan IndexPosition);
+	quit_chan := make(chan bool);
 
 	go parser(os.Args[1],input_queue)
 	go write_database("XMLittre.dict", input_queue, index_chan)
+	go write_index("XMLittre.idx", index_chan, quit_chan)
 
 	for {
-		data := <-index_chan
-		if data.quit == true {
+		data := <-quit_chan
+		if data == true {
 			break
 		}
 	}
