@@ -267,9 +267,9 @@ func parser(filename string, data chan *Definition) {
 
 					// If there is a supplement
 					// TODO : Really manages this.
-					if _,err := getAttribute(t, "supplement") ; err == nil {
+					/*if _,err := getAttribute(t, "supplement") ; err == nil {
 						name = name+" (suppl.)";
-					}
+					}*/
 
 					def, err := parseDefinition(name, parser);
 					if err != nil {
@@ -336,9 +336,9 @@ func write_index(filename string, input_queue chan IndexPosition, quit chan bool
 		}
 
 		f.Write([]byte(pos.Name))
+		f.Write([]byte{0})
 		f.Write(int32_to_byte(pos.Offset))
 		f.Write(int32_to_byte(pos.Size))
-		f.Write([]byte{0})
 	}
 
 	quit<-true
